@@ -8,6 +8,11 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 class ApiHandler {
   constructor() {};
   
+  /**
+   * 
+   * @param {!AxiosRequestConfig} config  axios config
+   * @returns {Promise<Array<any>>} response data
+   */
   public getInformation(config:AxiosRequestConfig | undefined = undefined): Promise<Array<any>>{
     return axios({
       ...config
@@ -19,4 +24,4 @@ class ApiHandler {
   }
 }
 
-export default ApiHandler;
+export default new ApiHandler();
