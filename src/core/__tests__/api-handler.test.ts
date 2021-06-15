@@ -1,8 +1,7 @@
 import {Method} from 'axios';
-import ApiHandler from '../api-handler';
+import apiHandler from '../api-handler';
 import {accessKey, secretKey} from '../../config/key';
 
-const apiHandler = new ApiHandler();
 const tickerConfig = {
   method: 'get' as Method,
   url: 'https://api.upbit.com/v1/ticker',
@@ -16,7 +15,8 @@ const daysCandleConfig = {
   url: 'https://api.upbit.com/v1/candles/days',
   params: {
     market: 'KRW-BTC',
-    count: 2
+    count: 2,
+    // to: '2021-06-09 00:00:01'
   }
 }
 
