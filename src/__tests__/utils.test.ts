@@ -10,12 +10,12 @@ describe('getDayCandleConfig function', () => {
   })
 
   it('should get 1 day ago date with arg 1', () => {
-    const result = getDayCandleConfig(1);
-    console.log(result);
+    // const result = getDayCandleConfig(1);
+    console.log('test');
   })
 
   it('should get 2 day ago date with arg 1', () => {
-    const result = getDayCandleConfig(2);
-    console.log(result);
+    // const result = getDayCandleConfig(2);
+    // console.log(result);
   })
 })

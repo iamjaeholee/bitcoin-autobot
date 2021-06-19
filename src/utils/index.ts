@@ -1,19 +1,15 @@
 import {Method} from 'axios';
+import {ETHEREUM} from '../config';
 
-export const getDayCandleConfig = (amount: number = 0) => {
-  const currentDate = new Date(Date.now() - amount * 24 * 60 * 60 * 1000);
-
-  const toDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()).toISOString();
-
-  const daysCandleConfig = {
+export const getDayCandleConfig = (toDate: Date) => {
+  const ethDaysCandleConfig = {
     method: 'get' as Method,
     url: 'https://api.upbit.com/v1/candles/days',
     params: {
-      market: 'KRW-BTC',
+      market: ETHEREUM,
       count: 1,
       to: toDate
     }
   }
-
-  return daysCandleConfig;
+  return {ethDaysCandleConfig};
 }
