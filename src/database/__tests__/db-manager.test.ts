@@ -34,9 +34,10 @@ describe('DbManager class putItem function', () => {
     expect(result).not.toBe(undefined);
     expect(result?.$metadata.httpStatusCode).toBe(200);
   })
+
 })
 
-describe('DbManager class putItem function', () => {
+describe('DbManager class getItem function', () => {
   it('should fetch item specified key', async () => {
     const params = {
       TableName: "Ethereum",
@@ -51,4 +52,15 @@ describe('DbManager class putItem function', () => {
     expect(result).not.toBe(undefined);
     expect(result?.$metadata.httpStatusCode).toBe(200);
   })
+})
+
+afterAll(async () => {
+  const params = {
+    TableName: "Ethereum",
+    Key: {
+      date: {S: date}
+    },
+  }
+
+  const result = await DbManager.deleteItem(params);
 })
