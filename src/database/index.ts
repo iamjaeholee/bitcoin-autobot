@@ -1,4 +1,4 @@
-import { PutItemCommand, PutItemCommandInput, GetItemCommand, GetItemCommandInput } from "@aws-sdk/client-dynamodb";
+import { PutItemCommand, PutItemCommandInput, GetItemCommand, GetItemCommandInput, DeleteItemCommandOutput, DeleteItemCommand, DeleteItemCommandInput } from "@aws-sdk/client-dynamodb";
 import {ddbClient} from './ddbClient';
 
 /**
@@ -35,6 +35,23 @@ class DbManager {
   public async getItem(params: GetItemCommandInput) {
     try {
       const data = await ddbClient.send(new GetItemCommand(params));
+
+      return data;
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+
+  /**
+   * 
+   * @param {DeleteItemCommandInput} params 
+   * @returns {DeleteItemCommandOutput}
+   */
+
+  public async deleteItem(params: DeleteItemCommandInput) {
+    try {
+      const data = await ddbClient.send(new DeleteItemCommand(params));
 
       return data;
     } catch(err) {
