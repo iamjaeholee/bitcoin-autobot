@@ -15,27 +15,27 @@ const daysCandleConfig = {
   }
 }
 
-describe('DbManager class putItem function', () => {
-  it('should put item specified above', async () => {
-    const getEthereumData = await ApiHandler.getInformation(daysCandleConfig);
+// describe('DbManager class putItem function', () => {
+//   it('should put item specified above', async () => {
+//     const getEthereumData = await ApiHandler.getInformation(daysCandleConfig);
 
-    const params = {
-      TableName: "Ethereum",
-      Item: {
-        date: {S: date},
-        data: {S: typeof getEthereumData === 'string' ? getEthereumData : JSON.stringify(getEthereumData)},
-      },
-    }
+//     const params = {
+//       TableName: "Ethereum",
+//       Item: {
+//         date: {S: date},
+//         data: {S: typeof getEthereumData === 'string' ? getEthereumData : JSON.stringify(getEthereumData)},
+//       },
+//     }
 
-    const result = await DbManager.putItem(params);
+//     const result = await DbManager.putItem(params);
 
-    console.log(result);
+//     console.log(result);
 
-    expect(result).not.toBe(undefined);
-    expect(result?.$metadata.httpStatusCode).toBe(200);
-  })
+//     expect(result).not.toBe(undefined);
+//     expect(result?.$metadata.httpStatusCode).toBe(200);
+//   })
 
-})
+// })
 
 describe('DbManager class getItem function', () => {
   it('should fetch item specified key', async () => {
@@ -54,13 +54,13 @@ describe('DbManager class getItem function', () => {
   })
 })
 
-afterAll(async () => {
-  const params = {
-    TableName: "Ethereum",
-    Key: {
-      date: {S: date}
-    },
-  }
+// afterAll(async () => {
+//   const params = {
+//     TableName: "Ethereum",
+//     Key: {
+//       date: {S: date}
+//     },
+//   }
 
-  const result = await DbManager.deleteItem(params);
-})
+//   const result = await DbManager.deleteItem(params);
+// })
