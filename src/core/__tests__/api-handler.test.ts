@@ -20,6 +20,16 @@ const daysCandleConfig = {
   }
 }
 
+const minutesCandleConfig = {
+  method: 'get' as Method,
+  url: 'https://api.upbit.com/v1/candles/minutes/240',
+  params: {
+    market: 'KRW-BTC',
+    count: 80000000,
+    // to: '2021-06-09 00:00:01'
+  }
+}
+
 describe('TickerGetter function', () => {
   it('should get daysCandle information from get method', async () => {
     const tickerPromise = apiHandler.getInformation(tickerConfig);
@@ -30,6 +40,14 @@ describe('TickerGetter function', () => {
     })
   })
 
+  it('should get minutes information from get method', async () => {
+    const tickerPromise = apiHandler.getInformation(minutesCandleConfig);
+
+    await tickerPromise.then((data: Array<any>) => {
+      console.log(data);
+      expect(typeof data).toEqual('object');
+    })
+  })
 
   it('should get ticker information from get method', async () => {
     const daysCandlePromise = apiHandler.getInformation(daysCandleConfig);

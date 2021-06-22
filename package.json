@@ -33,6 +33,7 @@
     "cross-env": "^7.0.3",
     "date-fns": "^2.22.1",
     "dotenv": "^10.0.0",
+    "exceljs": "^4.2.1",
     "express": "^4.17.1",
     "helmet": "^4.6.0",
     "node-schedule": "^2.0.0",
