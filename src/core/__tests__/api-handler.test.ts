@@ -25,7 +25,7 @@ const minutesCandleConfig = {
   url: 'https://api.upbit.com/v1/candles/minutes/240',
   params: {
     market: 'KRW-BTC',
-    count: 80000000,
+    count: 1,
     // to: '2021-06-09 00:00:01'
   }
 }

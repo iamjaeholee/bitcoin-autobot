@@ -19,7 +19,7 @@ class ApiHandler {
     }).then((res) => {
       return res.data;
     }).catch((err) => {
-      return err;
+      return err.response.data;
     })
   }
 }
