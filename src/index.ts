@@ -11,7 +11,8 @@ import { BADQUERY } from 'dns';
 
 // // put data
 // (async () => {
-//   const result = await dataHandler.putDataWithEms({year: 2021, month: 5, date:19}, {year:2021, month:7, date:2});
+//   // const result = await dataHandler.putDataWithEms({year: 2021, month: 5, date:19}, {year:2021, month:7, date:2});
+//   const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:3, hour: 4}, {year:2021, month:6, date:3, hour: 16});
 //   // const result = await dataHandler.putDataToExcel();
 
 //   result ? console.log('success') : console.log('fail');
@@ -71,47 +72,16 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
   // }
 });
 
-// // UTC 01
-// schedule.scheduleJob('0 0 1 * * *', async () => {
-//   const today = new Date(Date.now());
+// every 4 hours schedule
+schedule.scheduleJob('0 0 */4 * * *', async () => {
+  const today = new Date(Date.now());
+  const nextDay = add(today, {hours:4});
 
-//   const daysCandleConfig = {
-//     method: 'get' as Method,
-//     url: 'https://api.upbit.com/v1/candles/days',
-//     params: {
-//       market: 'KRW-BTC',
-//       count: 1,
-//     }
-//   }
-
-//   const todayDayCandle = await apiHandler.getInformation(daysCandleConfig);
-
-//   // fetch yester days info from DB
-//    const getParams = {
-//     TableName: ETHTABLE,
-//     Key: {
-//       date: { S: format(today, "yyyy-MM-dd") },
-//     },
-//   };
-
-//   // get item
-//   try{
-//     const yesterdayData = await DbManager.getItem(getParams);
-//     const parsedData = JSON.parse(yesterdayData?.Item?.data?.S as string);
-
-//     const todayEms = emsComputer.computeEms(todayDayCandle[0].trade_price, parsedData.ems);
-
-//     // today trade_price < todayEms  or today change_rate < -2.5 sell all and block semaphore
-//     if(todayDayCandle[0].trade_price <= todayEms || todayDayCandle[0].change_rate < -2.5) {
-//       sellAll();
-//       setSemaphore();
-//     } else {
-//       buy();
-//     }
-//   } catch(e) {
-//     console.error(e);
-//   }
-// });
+  dataHandler.putDataQuarterly(
+    {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate(), hour: today.getUTCHours()},
+    {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate(), hour: nextDay.getUTCHours()},
+  )
+});
 
 // // UTC 04
 // schedule.scheduleJob('0 0 4 * * *', async () => {

@@ -61,6 +61,13 @@ describe('DataHandler class', () => {
   it('should put 10 items from start date', async () => {
     expect(firstTenData).toBe(true);
   })
+  
+  // it('putDataQuarterly should put data in DB properly', async () => {
+
+  //   const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date: 2, hour: 4}, {year: 2021, month: 6, date: 3, hour: 12});
+
+  //   expect(result).toBe(true);
+  // })
 
   // it('should put first ems from 10 items before start date', async () => {
 

@@ -8,14 +8,21 @@ import {
 import DbManager from "../database";
 import apiHandler from "./api-handler";
 import { format, add, sub } from "date-fns";
-import { getDayCandleConfig } from "../utils";
-import { ETHTABLE } from "../config";
+import { getDayCandleConfig, getQuarterCandleConfig } from "../utils";
+import { ETHTABLE, ETHTABLE_QUARTER } from "../config";
 import EmsComputer from "./ems-computer";
 
 interface inputDate {
   year: number;
   month: number;
   date: number;
+}
+
+interface quarterInputDate {
+  year: number;
+  month: number;
+  date: number;
+  hour: number;
 }
 
 class DataHandler {
@@ -287,6 +294,83 @@ class DataHandler {
       )) as any[];
 
       startDateInstance = sub(startDateInstance, { minutes: 240 * 200 });
+    }
+  }
+
+
+  /**
+   * 
+   * @param startDate include
+   * @param endDate exclude
+   * @returns 
+   */
+
+  public async putDataQuarterly(startDate: quarterInputDate, endDate: quarterInputDate) {
+    let startDateInstance = new Date(
+      Date.UTC(startDate.year, startDate.month, startDate.date, startDate.hour)
+    );
+    let endDateInstance = new Date(
+      Date.UTC(endDate.year, endDate.month, endDate.date, endDate.hour)
+    );
+
+    // console.log(startDateInstance);
+    // console.log(endDateInstance);
+
+    try {
+      for await (let result of this.putDataQuarterlyGenerator(
+        startDateInstance,
+        endDateInstance
+      )) {
+        console.log(result); // log the Output Data
+      }
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
+  }
+
+  private async *putDataQuarterlyGenerator(
+    startDate: Date,
+    endDate: Date
+  ): AsyncGenerator<PutItemCommandOutput | undefined> {
+    let startDateInstance = startDate;
+    let endDateInstance = endDate;
+
+    while (startDateInstance < endDateInstance) {
+      // make config
+      const startDaysCandleConfig =
+        getQuarterCandleConfig(startDateInstance).ethQuarterCandleConfig;
+
+      // fetch API
+      const result = (await new Promise((resolve) =>
+        setTimeout(
+          async () =>
+            resolve(await apiHandler.getInformation(startDaysCandleConfig)),
+          1100
+        )
+      )) as any[];
+
+      console.log(result);
+
+      // set params for putting DB
+      const putParams = {
+        TableName: ETHTABLE_QUARTER,
+        Item: {
+          date: { S: format(startDateInstance, "yyyy-MM-dd") },
+          data: { S: JSON.stringify(result[0]) },
+          hour: { S: startDateInstance.getHours().toString()},
+        },
+      };
+
+      // put item
+      const output = yield await DbManager.putItem(putParams);
+      console.log(output);
+
+      // add quarter
+      startDateInstance = add(startDateInstance, { hours: 4 });
     }
   }
 }
