@@ -35,7 +35,6 @@ class DataHandler {
 
     try {
       for await (let result of this.putTenDataGenerator(dateInstance)) {
-        console.log(result); // log the Output Data
       }
       return true;
     } catch (error) {
@@ -89,7 +88,6 @@ class DataHandler {
         startDateInstance,
         endDateInstance
       )) {
-        console.log(result); // log the Output Data
       }
 
       return true;
@@ -132,10 +130,7 @@ class DataHandler {
 
       // get item
       const yesterdayData = await DbManager.getItem(getParams);
-      const parsedData = JSON.parse(yesterdayData?.Item?.data?.S as string);
-      console.log(parsedData);
-
-      const yesterdayEms = parsedData.trade_price;
+      const yesterdayEms = Number(yesterdayData?.Item?.ems?.N);
 
       const params = [result[0].trade_price, yesterdayEms];
 
@@ -168,7 +163,6 @@ class DataHandler {
       startDateInstance
     )) {
       const outputData = result?.Item?.data?.S as string;
-      console.log(outputData);
 
       sum += Number(JSON.parse(outputData).trade_price);
     }
@@ -251,9 +245,7 @@ class DataHandler {
     ];
 
     try {
-      console.log("test1");
       for await (let result of this.putDataToExcelGenerator()) {
-        console.log(result);
         result.forEach((row) => worksheet.addRow(row).commit());
       }
 
@@ -270,8 +262,6 @@ class DataHandler {
     let startDateInstance = new Date(Date.UTC(2021, 5, 24));
     // let startDateInstance = new Date(Date.UTC(2017, 11, 27));
     const firstDateInstance = new Date(Date.UTC(2017, 8, 26));
-
-    // console.log('test');
 
     while (startDateInstance > firstDateInstance) {
       const minuitesCandleConfig = {
@@ -313,15 +303,12 @@ class DataHandler {
       Date.UTC(endDate.year, endDate.month, endDate.date, endDate.hour)
     );
 
-    // console.log(startDateInstance);
-    // console.log(endDateInstance);
 
     try {
       for await (let result of this.putDataQuarterlyGenerator(
         startDateInstance,
         endDateInstance
       )) {
-        console.log(result); // log the Output Data
       }
 
       return true;
@@ -353,7 +340,6 @@ class DataHandler {
         )
       )) as any[];
 
-      console.log(result);
 
       // set params for putting DB
       const putParams = {
@@ -367,7 +353,6 @@ class DataHandler {
 
       // put item
       const output = yield await DbManager.putItem(putParams);
-      console.log(output);
 
       // add quarter
       startDateInstance = add(startDateInstance, { hours: 4 });

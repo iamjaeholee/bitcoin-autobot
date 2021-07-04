@@ -32,8 +32,8 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
   const nextDay = add(today, {days:1});
 
   dataHandler.putDataWithEms(
-    {year:today.getFullYear(), month:today.getMonth(), date: today.getDate()},
-    {year:nextDay.getFullYear(), month:nextDay.getMonth(), date: nextDay.getDate()},
+    {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate()},
+    {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate()},
   )
 
   // // fetch yester days info from DB

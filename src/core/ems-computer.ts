@@ -12,7 +12,7 @@ class EmsComputer {
    * @returns {number} 계산된 EMS
    */
   public computeEms(tradePrice: number = 0, prevEms: number = 0) {
-    return tradePrice * 0.9 + prevEms * 0.1;
+    return Math.floor(tradePrice * (1/7) + prevEms * (6/7));
   }
 
   /**
