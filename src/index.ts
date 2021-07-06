@@ -7,6 +7,7 @@ import emsComputer from './core/ems-computer';
 import { ETHTABLE } from "./config";
 import DbManager from "./database";
 import { BADQUERY } from 'dns';
+import logger from './utils/logger';
 
 
 // // put data
@@ -26,7 +27,7 @@ const sellAll = () => {}; // mock function
 const setSemaphore = () => {}; // mock function
 const buy = () => {}; // mock function
 
-console.log('scheduling is started every UTC 00 will add ems data')
+logger.info('scheduling is started every UTC 00 will add ems data')
 schedule.scheduleJob('0 0 0 * * *', async () => {
   const today = new Date(Date.now());
   const nextDay = add(today, {days:1});
