@@ -31,6 +31,7 @@ const sellAll = () => {}; // mock function
 const setSemaphore = () => {}; // mock function
 const buy = () => {}; // mock function
 
+logger.info('service has been started');
 schedule.scheduleJob('0 0 0 * * *', async () => {
   const today = new Date(Date.now());
   const nextDay = add(today, {days:1});

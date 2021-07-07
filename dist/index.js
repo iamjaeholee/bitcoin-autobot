@@ -60,6 +60,7 @@ var logger_1 = __importDefault(require("./utils/logger"));
 var sellAll = function () { }; // mock function
 var setSemaphore = function () { }; // mock function
 var buy = function () { }; // mock function
+logger_1.default.info('service has been started');
 node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaiter(void 0, void 0, void 0, function () {
     var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
     var _a, _b, _c, _d, _e, _f, _g, _h;
