@@ -75,9 +75,9 @@ describe('DataHandler class', () => {
   //   expect(result).toBe(true);
   // })
 
-  // it('should put data from startDate to endDate with ems value using putDataWithEms', async () => {
-  //   const result = await dataHandler.putDataWithEms({year: 2021, month: 5, date:19}, {year:2021, month:7, date:2});
+  it('should put data from startDate to endDate with ems value using putDataWithEms', async () => {
+    const result = await dataHandler.putDataWithEms({year: 2021, month: 5, date:19}, {year:2021, month:5, date:20});
 
-  //   expect(result).toBe(true);
-  // })
+    expect(result).toBe(true);
+  })
 })

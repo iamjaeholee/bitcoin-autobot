@@ -11,6 +11,7 @@ import { format, add, sub } from "date-fns";
 import { getDayCandleConfig, getQuarterCandleConfig } from "../utils";
 import { ETHTABLE, ETHTABLE_QUARTER } from "../config";
 import EmsComputer from "./ems-computer";
+import {logDayCandle, logQuarterCandle} from '../utils/log-cloudwatch';
 
 interface inputDate {
   year: number;
@@ -133,6 +134,10 @@ class DataHandler {
       const yesterdayEms = Number(yesterdayData?.Item?.ems?.N);
 
       const params = [result[0].trade_price, yesterdayEms];
+      const ems = EmsComputer.computeEms(...params);
+
+      // logging
+      logDayCandle(result[0], ems);
 
       // set params for putting DB
       const putParams = {
@@ -140,7 +145,7 @@ class DataHandler {
         Item: {
           date: { S: format(startDateInstance, "yyyy-MM-dd") },
           data: { S: JSON.stringify(result[0]) },
-          ems: { N: EmsComputer.computeEms(...params).toString() },
+          ems: { N: ems.toString() },
         },
       };
 
@@ -340,6 +345,8 @@ class DataHandler {
         )
       )) as any[];
 
+      // logging
+      logQuarterCandle(result[0]);
 
       // set params for putting DB
       const putParams = {
