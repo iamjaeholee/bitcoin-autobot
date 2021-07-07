@@ -11,8 +11,8 @@ AWS.config.update({
 
 winston.add(new WinstonCloudWatch({
   cloudWatchLogs: new AWS.CloudWatchLogs(),
-  logGroupName: 'testing',
-  logStreamName: 'first'
+  logGroupName: process.env.NODE_ENV === 'prod' ? 'ethereum' : 'testing',
+  logStreamName: process.env.NODE_ENV === 'prod' ? 'ethereum' : 'first'
 }));
 
 export default winston;
