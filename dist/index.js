@@ -69,7 +69,11 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
             case 0:
                 today = new Date(Date.now());
                 nextDay = date_fns_1.add(today, { days: 1 });
-                data_handler_1.default.putDataWithEms({ year: today.getUTCFullYear(), month: today.getUTCMonth(), date: today.getUTCDate() }, { year: nextDay.getUTCFullYear(), month: nextDay.getUTCMonth(), date: nextDay.getUTCDate() });
+                return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: today.getUTCFullYear(), month: today.getUTCMonth(), date: today.getUTCDate() }, { year: nextDay.getUTCFullYear(), month: nextDay.getUTCMonth(), date: nextDay.getUTCDate() })
+                    // 판단 플로우
+                ];
+            case 1:
+                _j.sent();
                 getParams = {
                     TableName: config_1.ETHTABLE,
                     Key: {
@@ -82,16 +86,16 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
                         date: { S: date_fns_1.format(date_fns_1.sub(today, { days: 1 }), "yyyy-MM-dd") },
                     },
                 };
-                _j.label = 1;
-            case 1:
-                _j.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, database_1.default.getItem(getParams)];
+                _j.label = 2;
             case 2:
+                _j.trys.push([2, 5, , 6]);
+                return [4 /*yield*/, database_1.default.getItem(getParams)];
+            case 3:
                 yesterdayData = _j.sent();
                 parsedData = JSON.parse((_b = (_a = yesterdayData === null || yesterdayData === void 0 ? void 0 : yesterdayData.Item) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.S);
                 yesterdayEms = Number((_d = (_c = yesterdayData === null || yesterdayData === void 0 ? void 0 : yesterdayData.Item) === null || _c === void 0 ? void 0 : _c.ems) === null || _d === void 0 ? void 0 : _d.N);
                 return [4 /*yield*/, database_1.default.getItem(prevGetParams)];
-            case 3:
+            case 4:
                 beforeYesterDayData = _j.sent();
                 beforeYesterDayParsedData = JSON.parse((_f = (_e = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _e === void 0 ? void 0 : _e.data) === null || _f === void 0 ? void 0 : _f.S);
                 beforeYesterDayEms = Number((_h = (_g = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _g === void 0 ? void 0 : _g.ems) === null || _h === void 0 ? void 0 : _h.N);
@@ -121,12 +125,12 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
                     logger_1.default.info("====== trade_price >= ema ======");
                     logger_1.default.info("====== Min Max \uAD6C\uD604 \uC608\uC815");
                 }
-                return [3 /*break*/, 5];
-            case 4:
+                return [3 /*break*/, 6];
+            case 5:
                 e_1 = _j.sent();
                 console.error(e_1);
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); });
