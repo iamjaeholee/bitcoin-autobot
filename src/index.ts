@@ -36,7 +36,7 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
   const today = new Date(Date.now());
   const nextDay = add(today, {days:1});
 
-  dataHandler.putDataWithEms(
+  await dataHandler.putDataWithEms(
     {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate()},
     {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate()},
   )
