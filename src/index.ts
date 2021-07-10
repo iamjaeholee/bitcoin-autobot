@@ -75,8 +75,8 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
       logger.info(`ema: ${yesterdayEms}`);
       logger.info(`====== trade_price < ema ======`);
       logger.info(`2일전 trade_price: ${beforeYesterDayParsedData.trade_price}`);
-      const diff = beforeYesterDayParsedData.trade_price - parsedData.trade_price;
-      logger.info(`2일전 trade_price - 1일전 trade_price: ${diff}`);
+      const diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
+      logger.info(`1일전 trade_price - 2일전 trade_price: ${diff}`);
       const diffRate = diff / beforeYesterDayParsedData.trade_price;
       logger.info(`변화율: ${diffRate}`);
 

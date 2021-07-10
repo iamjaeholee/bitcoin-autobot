@@ -106,8 +106,8 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
                     logger_1.default.info("ema: " + yesterdayEms);
                     logger_1.default.info("====== trade_price < ema ======");
                     logger_1.default.info("2\uC77C\uC804 trade_price: " + beforeYesterDayParsedData.trade_price);
-                    diff = beforeYesterDayParsedData.trade_price - parsedData.trade_price;
-                    logger_1.default.info("2\uC77C\uC804 trade_price - 1\uC77C\uC804 trade_price: " + diff);
+                    diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
+                    logger_1.default.info("1\uC77C\uC804 trade_price - 2\uC77C\uC804 trade_price: " + diff);
                     diffRate = diff / beforeYesterDayParsedData.trade_price;
                     logger_1.default.info("\uBCC0\uD654\uC728: " + diffRate);
                     if (diffRate <= -0.1) {
