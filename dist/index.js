@@ -45,7 +45,7 @@ var data_handler_1 = __importDefault(require("./core/data-handler"));
     var result;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, data_handler_1.default.putDataQuarterly({ year: 2020, month: 10, date: 18, hour: 0 }, { year: 2021, month: 6, date: 23, hour: 8 }, 'alpha')];
+            case 0: return [4 /*yield*/, data_handler_1.default.putDataQuarterly({ year: 2021, month: 6, date: 23, hour: 12 }, { year: 2021, month: 6, date: 24, hour: 0 }, 'alpha')];
             case 1:
                 result = _a.sent();
                 // const result = await dataHandler.putDataToExcel();

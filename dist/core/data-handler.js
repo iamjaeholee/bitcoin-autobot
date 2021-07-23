@@ -136,7 +136,7 @@ var DataHandler = /** @class */ (function () {
                         params = {
                             TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Item: {
-                                date: { S: date_fns_1.format(dateInstance, "yyyy-MM-dd") },
+                                date: { S: dateInstance.toISOString().substr(0, 10) },
                                 data: { S: JSON.stringify(result[0]) },
                             },
                         };
@@ -237,7 +237,7 @@ var DataHandler = /** @class */ (function () {
                                         getParams = {
                                             TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                                             Key: {
-                                                date: { S: date_fns_1.format(yesterDayInstance, "yyyy-MM-dd") },
+                                                date: { S: yesterDayInstance.toISOString().substr(0, 10) },
                                             },
                                         };
                                         return [4 /*yield*/, __await(database_1.default.getItem(getParams))];
@@ -251,7 +251,7 @@ var DataHandler = /** @class */ (function () {
                                         putParams = {
                                             TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                                             Item: {
-                                                date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
+                                                date: { S: startDateInstance.toISOString().substr(0, 10) },
                                                 data: { S: JSON.stringify(result[0]) },
                                                 ems: { N: ems.toString() },
                                             },
@@ -329,7 +329,7 @@ var DataHandler = /** @class */ (function () {
                         putParams = {
                             TableName: market === 'ethreum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Item: {
-                                date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
+                                date: { S: startDateInstance.toISOString().substr(0, 10) },
                                 data: { S: JSON.stringify(result[0]) },
                                 ems: { N: averEms.toString() },
                             },
@@ -364,7 +364,7 @@ var DataHandler = /** @class */ (function () {
                         getParams = {
                             TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Key: {
-                                date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
+                                date: { S: startDateInstance.toISOString().substr(0, 10) },
                             },
                         };
                         return [4 /*yield*/, __await(database_1.default.getItem(getParams))];
@@ -596,7 +596,7 @@ var DataHandler = /** @class */ (function () {
                                         putParams = {
                                             TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
                                             Item: {
-                                                date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
+                                                date: { S: startDateInstance.toISOString().substr(0, 10) },
                                                 data: { S: JSON.stringify(result[0]) },
                                                 hour: { S: startDateInstance.getUTCHours().toString() },
                                             },
