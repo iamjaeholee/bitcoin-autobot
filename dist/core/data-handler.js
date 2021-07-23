@@ -594,11 +594,11 @@ var DataHandler = /** @class */ (function () {
                                         // logging
                                         log_cloudwatch_1.logQuarterCandle(result[0], market);
                                         putParams = {
-                                            TableName: config_1.ETHTABLE_QUARTER,
+                                            TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
                                             Item: {
                                                 date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
                                                 data: { S: JSON.stringify(result[0]) },
-                                                hour: { S: startDateInstance.getHours().toString() },
+                                                hour: { S: startDateInstance.getUTCHours().toString() },
                                             },
                                         };
                                         return [4 /*yield*/, __await(database_1.default.putItem(putParams))];

@@ -9,7 +9,7 @@ import DbManager from "../database";
 import apiHandler from "./api-handler";
 import { format, add, sub } from "date-fns";
 import { getDayCandleConfig, getQuarterCandleConfig } from "../utils";
-import { ETHTABLE, ETHTABLE_QUARTER, ALPHATABLE } from "../config";
+import { ETHTABLE, ETHTABLE_QUARTER, ALPHATABLE, ALPHATABLE_QUARTER } from "../config";
 import EmsComputer from "./ems-computer";
 import {logDayCandle, logQuarterCandle} from '../utils/log-cloudwatch';
 
@@ -63,7 +63,7 @@ class DataHandler {
       const params = {
         TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
         Item: {
-          date: { S: format(dateInstance, "yyyy-MM-dd") },
+          date: { S: dateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
         },
       };
@@ -128,7 +128,7 @@ class DataHandler {
       const getParams = {
         TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
         Key: {
-          date: { S: format(yesterDayInstance, "yyyy-MM-dd") },
+          date: { S: yesterDayInstance.toISOString().substr(0, 10)},
         },
       };
 
@@ -146,7 +146,7 @@ class DataHandler {
       const putParams = {
         TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
         Item: {
-          date: { S: format(startDateInstance, "yyyy-MM-dd") },
+          date: { S: startDateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
           ems: { N: ems.toString() },
         },
@@ -189,7 +189,7 @@ class DataHandler {
     const putParams = {
       TableName: market === 'ethreum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
       Item: {
-        date: { S: format(startDateInstance, "yyyy-MM-dd") },
+        date: { S: startDateInstance.toISOString().substr(0, 10)},
         data: { S: JSON.stringify(result[0]) },
         ems: { N: averEms.toString() },
       },
@@ -219,7 +219,7 @@ class DataHandler {
       const getParams = {
         TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
         Key: {
-          date: { S: format(startDateInstance, "yyyy-MM-dd") },
+          date: { S: startDateInstance.toISOString().substr(0, 10)},
         },
       };
       const result = yield await DbManager.getItem(getParams);
@@ -357,11 +357,11 @@ class DataHandler {
 
       // set params for putting DB
       const putParams = {
-        TableName: ETHTABLE_QUARTER,
+        TableName: market === 'ethereum' ? ETHTABLE_QUARTER : 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
         Item: {
-          date: { S: format(startDateInstance, "yyyy-MM-dd") },
+          date: { S: startDateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
-          hour: { S: startDateInstance.getHours().toString()},
+          hour: { S: startDateInstance.getUTCHours().toString()},
         },
       };
 
