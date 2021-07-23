@@ -9,7 +9,7 @@ import DbManager from "../database";
 import apiHandler from "./api-handler";
 import { format, add, sub } from "date-fns";
 import { getDayCandleConfig, getQuarterCandleConfig } from "../utils";
-import { ETHTABLE, ETHTABLE_QUARTER } from "../config";
+import { ETHTABLE, ETHTABLE_QUARTER, ALPHATABLE } from "../config";
 import EmsComputer from "./ems-computer";
 import {logDayCandle, logQuarterCandle} from '../utils/log-cloudwatch';
 
@@ -29,13 +29,13 @@ interface quarterInputDate {
 class DataHandler {
   constructor() {}
 
-  public async putTenData(startDate: inputDate) {
+  public async putTenData(startDate: inputDate, market: string) {
     let dateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date)
     );
 
     try {
-      for await (let result of this.putTenDataGenerator(dateInstance)) {
+      for await (let result of this.putTenDataGenerator(dateInstance, market)) {
       }
       return true;
     } catch (error) {
@@ -45,7 +45,8 @@ class DataHandler {
   }
 
   private async *putTenDataGenerator(
-    date: Date
+    date: Date,
+    market: string
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let dateInstance = date;
 
@@ -53,14 +54,14 @@ class DataHandler {
     while (i < 10) {
       // make config
       const daysCandleConfig =
-        getDayCandleConfig(dateInstance).ethDaysCandleConfig;
+        getDayCandleConfig(dateInstance, market).daysCandleConfig;
 
       // fetch API
       const result = await apiHandler.getInformation(daysCandleConfig);
 
       // set params for DB
       const params = {
-        TableName: "Ethereum",
+        TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
         Item: {
           date: { S: format(dateInstance, "yyyy-MM-dd") },
           data: { S: JSON.stringify(result[0]) },
@@ -76,7 +77,7 @@ class DataHandler {
     }
   }
 
-  public async putDataWithEms(startDate: inputDate, endDate: inputDate) {
+  public async putDataWithEms(startDate: inputDate, endDate: inputDate, market: string) {
     let startDateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date)
     );
@@ -87,7 +88,8 @@ class DataHandler {
     try {
       for await (let result of this.putDataWithEmsGenerator(
         startDateInstance,
-        endDateInstance
+        endDateInstance,
+        market
       )) {
       }
 
@@ -101,7 +103,8 @@ class DataHandler {
 
   private async *putDataWithEmsGenerator(
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    market: string
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let startDateInstance = startDate;
     let endDateInstance = endDate;
@@ -109,7 +112,7 @@ class DataHandler {
     while (startDateInstance < endDateInstance) {
       // make config
       const startDaysCandleConfig =
-        getDayCandleConfig(startDateInstance).ethDaysCandleConfig;
+        getDayCandleConfig(startDateInstance, market).daysCandleConfig;
 
       // fetch API
       const result = (await new Promise((resolve) =>
@@ -123,7 +126,7 @@ class DataHandler {
       // fetch yester days info from DB
       let yesterDayInstance = new Date(sub(startDateInstance, { days: 1 }));
       const getParams = {
-        TableName: ETHTABLE,
+        TableName: market === 'ethereum' ? ETHTABLE : ETHTABLE,
         Key: {
           date: { S: format(yesterDayInstance, "yyyy-MM-dd") },
         },
@@ -141,7 +144,7 @@ class DataHandler {
 
       // set params for putting DB
       const putParams = {
-        TableName: "Ethereum",
+        TableName: market === 'ethereum' ? ETHTABLE : ETHTABLE,
         Item: {
           date: { S: format(startDateInstance, "yyyy-MM-dd") },
           data: { S: JSON.stringify(result[0]) },
@@ -157,7 +160,7 @@ class DataHandler {
     }
   }
 
-  public async putDataWithAverEms(startDate: inputDate) {
+  public async putDataWithAverEms(startDate: inputDate, market: string) {
     let startDateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date)
     );
@@ -165,7 +168,8 @@ class DataHandler {
     // summation
     let sum = 0;
     for await (let result of this.putDataWithAverEmsGenerator(
-      startDateInstance
+      startDateInstance,
+      market
     )) {
       const outputData = result?.Item?.data?.S as string;
 
@@ -177,13 +181,13 @@ class DataHandler {
     // set params for putting DB
     // make config
     const startDaysCandleConfig =
-      getDayCandleConfig(startDateInstance).ethDaysCandleConfig;
+      getDayCandleConfig(startDateInstance, market).daysCandleConfig;
 
     // fetch API
     const result = await apiHandler.getInformation(startDaysCandleConfig);
 
     const putParams = {
-      TableName: ETHTABLE,
+      TableName: market === 'ethreum' ? ETHTABLE : ETHTABLE,
       Item: {
         date: { S: format(startDateInstance, "yyyy-MM-dd") },
         data: { S: JSON.stringify(result[0]) },
@@ -201,7 +205,8 @@ class DataHandler {
   }
 
   private async *putDataWithAverEmsGenerator(
-    date: Date
+    date: Date,
+    market: string
   ): AsyncGenerator<GetItemCommandOutput | undefined> {
     let i = 0;
     let startDateInstance = date;
@@ -212,7 +217,7 @@ class DataHandler {
 
       // get item
       const getParams = {
-        TableName: ETHTABLE,
+        TableName: market === 'ethereum' ? ETHTABLE : ETHTABLE,
         Key: {
           date: { S: format(startDateInstance, "yyyy-MM-dd") },
         },

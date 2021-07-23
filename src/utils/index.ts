@@ -1,25 +1,25 @@
 import {Method} from 'axios';
-import {ETHEREUM} from '../config';
+import {ETHEREUM, ALPHA} from '../config';
 
-export const getDayCandleConfig = (toDate: Date) => {
-  const ethDaysCandleConfig = {
+export const getDayCandleConfig = (toDate: Date, market: string) => {
+  const daysCandleConfig = {
     method: 'get' as Method,
     url: 'https://api.upbit.com/v1/candles/days',
     params: {
-      market: ETHEREUM,
+      market: market === 'ethereum' ? ETHEREUM : 'alpha' ? ALPHA : ETHEREUM,
       count: 1,
       to: toDate
     }
   }
-  return {ethDaysCandleConfig};
+  return {daysCandleConfig};
 }
 
-export const getQuarterCandleConfig = (toDate: Date) => {
+export const getQuarterCandleConfig = (toDate: Date, market: string = '') => {
   const ethQuarterCandleConfig = {
     method: 'get' as Method,
     url: 'https://api.upbit.com/v1/candles/minutes/240',
     params: {
-      market: ETHEREUM,
+      market: market === 'ethereum' ? ETHEREUM : 'alpha' ? ALPHA : ETHEREUM,
       count: 1,
       to: toDate
     }
