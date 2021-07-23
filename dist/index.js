@@ -39,99 +39,112 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var node_schedule_1 = __importDefault(require("node-schedule"));
 var data_handler_1 = __importDefault(require("./core/data-handler"));
+var date_fns_1 = require("date-fns");
+var config_1 = require("./config");
+var database_1 = __importDefault(require("./database"));
+var logger_1 = require("./utils/logger");
 // put data
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var result;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, data_handler_1.default.putDataQuarterly({ year: 2021, month: 6, date: 23, hour: 12 }, { year: 2021, month: 6, date: 24, hour: 0 }, 'alpha')];
-            case 1:
-                result = _a.sent();
-                // const result = await dataHandler.putDataToExcel();
-                // const today = new Date(Date.UTC(2021, 5, 20));
-                // const nextDay = add(today, {days:1});
-                result ? console.log('success') : console.log('fail');
-                return [2 /*return*/];
-        }
-    });
-}); })();
+// (async () => {
+//   // const result = await dataHandler.putDataWithEms({year: 2020, month: 10, date:28}, {year:2021, month:6, date:23}, 'alpha');
+//   // const result = await dataHandler.putTenData({year: 2020, month: 10, date:18}, 'alpha');
+//   // const result = await dataHandler.putDataWithAverEms({year: 2020, month: 10, date:28}, 'alpha');
+//   const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:23, hour: 12}, {year:2021, month:6, date:24, hour: 0}, 'alpha');
+//   // const result = await dataHandler.putDataToExcel();
+//   // const today = new Date(Date.UTC(2021, 5, 20));
+//   // const nextDay = add(today, {days:1});
+//   result ? console.log('success') : console.log('fail');
+// })();
 // scheduler
 // TODO ScheduleJob to UTC time
 // UTC 9
 var sellAll = function () { }; // mock function
 var setSemaphore = function () { }; // mock function
 var buy = function () { }; // mock function
-// console.log('service has been started');
-// schedule.scheduleJob('0 0 0 * * *', async () => {
-//   const market = 'alpha' as string;
-//   const today = new Date(Date.now());
-//   const nextDay = add(today, {days:1});
-// 	const logger = market === 'ethereum' ? etherLogger : 'alpha' ? alphaLogger : etherLogger;
-//   await dataHandler.putDataWithEms(
-//     {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate()},
-//     {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate()},
-//     'alpha'
-//   )
-//   // 판단 플로우
-//   const getParams = {
-//     TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
-//     Key: {
-//       date: { S: format(today, "yyyy-MM-dd") },
-//     },
-//   };
-//   const prevGetParams = {
-//     TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
-//     Key: {
-//       date: { S: format(sub(today, {days:1}), "yyyy-MM-dd") },
-//     },
-//   };
-//   // get item
-//   try{
-//     // yesterDayData
-//     const yesterdayData = await DbManager.getItem(getParams);
-//     const parsedData = JSON.parse(yesterdayData?.Item?.data?.S as string);
-//     const yesterdayEms = Number(yesterdayData?.Item?.ems?.N);
-//     // beforeYesterDayData
-//     const beforeYesterDayData = await DbManager.getItem(prevGetParams);
-//     const beforeYesterDayParsedData = JSON.parse(beforeYesterDayData?.Item?.data?.S as string);
-//     const beforeYesterDayEms = Number(beforeYesterDayData?.Item?.ems?.N);
-//     // trade_price <= ems sell all ETH
-//     logger.info(`====== 판단 플로우 ======`);
-//     if(parsedData.trade_price < yesterdayEms) {
-//       logger.info(`trade_price: ${parsedData.trade_price}`);
-//       logger.info(`ema: ${yesterdayEms}`);
-//       logger.info(`====== trade_price < ema ======`);
-//       logger.info(`2일전 trade_price: ${beforeYesterDayParsedData.trade_price}`);
-//       const diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
-//       logger.info(`1일전 trade_price - 2일전 trade_price: ${diff}`);
-//       const diffRate = diff / beforeYesterDayParsedData.trade_price;
-//       logger.info(`변화율: ${diffRate}`);
-//       if(diffRate <= -0.1) {
-//         logger.info(`변화율 <= -10%`);
-//         logger.info(`&&&&&&&&&&&&&&& 오늘은 사는 날인 갑다 ~! *매수플로우 진행*`);
-//       } else {
-//         logger.info(`변화율 > -10%`);
-//         logger.info(`&&&&&&&&&&&&&&& 오늘은 김대기하는 날인 갑다 ~! *김대기*`);
-//       }
-//     }
-//     else {
-//       logger.info(`trade_price: ${parsedData.trade_price}`);
-//       logger.info(`ema: ${yesterdayEms}`);
-//       logger.info(`====== trade_price >= ema ======`);
-//       logger.info(`====== Min Max 구현 예정`);
-//     }
-//   } catch(e) {
-//     console.error(e);
-//   }
-// });
-// // every 4 hours schedule
-// schedule.scheduleJob('0 0 */4 * * *', async () => {
-//   const today = new Date(Date.now());
-//   const nextDay = add(today, {hours:4});
-//   dataHandler.putDataQuarterly(
-//     {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate(), hour: today.getUTCHours()},
-//     {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate(), hour: nextDay.getUTCHours()},
-//     'alpha',
-//   )
-// });
+console.log('service has been started');
+node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaiter(void 0, void 0, void 0, function () {
+    var market, today, nextDay, logger, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    return __generator(this, function (_j) {
+        switch (_j.label) {
+            case 0:
+                market = 'alpha';
+                today = new Date(Date.now());
+                nextDay = date_fns_1.add(today, { days: 1 });
+                logger = market === 'ethereum' ? logger_1.etherLogger : 'alpha' ? logger_1.alphaLogger : logger_1.etherLogger;
+                return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: today.getUTCFullYear(), month: today.getUTCMonth(), date: today.getUTCDate() }, { year: nextDay.getUTCFullYear(), month: nextDay.getUTCMonth(), date: nextDay.getUTCDate() }, 'alpha')
+                    // 판단 플로우
+                ];
+            case 1:
+                _j.sent();
+                getParams = {
+                    TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    Key: {
+                        date: { S: date_fns_1.format(today, "yyyy-MM-dd") },
+                    },
+                };
+                prevGetParams = {
+                    TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    Key: {
+                        date: { S: date_fns_1.format(date_fns_1.sub(today, { days: 1 }), "yyyy-MM-dd") },
+                    },
+                };
+                _j.label = 2;
+            case 2:
+                _j.trys.push([2, 5, , 6]);
+                return [4 /*yield*/, database_1.default.getItem(getParams)];
+            case 3:
+                yesterdayData = _j.sent();
+                parsedData = JSON.parse((_b = (_a = yesterdayData === null || yesterdayData === void 0 ? void 0 : yesterdayData.Item) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.S);
+                yesterdayEms = Number((_d = (_c = yesterdayData === null || yesterdayData === void 0 ? void 0 : yesterdayData.Item) === null || _c === void 0 ? void 0 : _c.ems) === null || _d === void 0 ? void 0 : _d.N);
+                return [4 /*yield*/, database_1.default.getItem(prevGetParams)];
+            case 4:
+                beforeYesterDayData = _j.sent();
+                beforeYesterDayParsedData = JSON.parse((_f = (_e = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _e === void 0 ? void 0 : _e.data) === null || _f === void 0 ? void 0 : _f.S);
+                beforeYesterDayEms = Number((_h = (_g = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _g === void 0 ? void 0 : _g.ems) === null || _h === void 0 ? void 0 : _h.N);
+                // trade_price <= ems sell all ETH
+                logger.info("====== \uD310\uB2E8 \uD50C\uB85C\uC6B0 ======");
+                if (parsedData.trade_price < yesterdayEms) {
+                    logger.info("trade_price: " + parsedData.trade_price);
+                    logger.info("ema: " + yesterdayEms);
+                    logger.info("====== trade_price < ema ======");
+                    logger.info("2\uC77C\uC804 trade_price: " + beforeYesterDayParsedData.trade_price);
+                    diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
+                    logger.info("1\uC77C\uC804 trade_price - 2\uC77C\uC804 trade_price: " + diff);
+                    diffRate = diff / beforeYesterDayParsedData.trade_price;
+                    logger.info("\uBCC0\uD654\uC728: " + diffRate);
+                    if (diffRate <= -0.1) {
+                        logger.info("\uBCC0\uD654\uC728 <= -10%");
+                        logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uC0AC\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uB9E4\uC218\uD50C\uB85C\uC6B0 \uC9C4\uD589*");
+                    }
+                    else {
+                        logger.info("\uBCC0\uD654\uC728 > -10%");
+                        logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uAE40\uB300\uAE30\uD558\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uAE40\uB300\uAE30*");
+                    }
+                }
+                else {
+                    logger.info("trade_price: " + parsedData.trade_price);
+                    logger.info("ema: " + yesterdayEms);
+                    logger.info("====== trade_price >= ema ======");
+                    logger.info("====== Min Max \uAD6C\uD604 \uC608\uC815");
+                }
+                return [3 /*break*/, 6];
+            case 5:
+                e_1 = _j.sent();
+                console.error(e_1);
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
+        }
+    });
+}); });
+// every 4 hours schedule
+node_schedule_1.default.scheduleJob('0 0 */4 * * *', function () { return __awaiter(void 0, void 0, void 0, function () {
+    var today, nextDay;
+    return __generator(this, function (_a) {
+        today = new Date(Date.now());
+        nextDay = date_fns_1.add(today, { hours: 4 });
+        data_handler_1.default.putDataQuarterly({ year: today.getUTCFullYear(), month: today.getUTCMonth(), date: today.getUTCDate(), hour: today.getUTCHours() }, { year: nextDay.getUTCFullYear(), month: nextDay.getUTCMonth(), date: nextDay.getUTCDate(), hour: nextDay.getUTCHours() }, 'alpha');
+        return [2 /*return*/];
+    });
+}); });
