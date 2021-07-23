@@ -15,4 +15,25 @@ winston.add(new WinstonCloudWatch({
   logStreamName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'first'
 }));
 
+const alphaLogger = winston.createLogger({
+  transports:[
+    new WinstonCloudWatch({
+      cloudWatchLogs: new AWS.CloudWatchLogs(),
+      logGroupName: process.env.NODE_ENV === 'production' ? 'alpha' : 'testing',
+      logStreamName: process.env.NODE_ENV === 'production' ? 'alpha' : 'first'
+    })
+  ]
+})
+
+const etherLogger = winston.createLogger({
+  transports:[
+    new WinstonCloudWatch({
+      cloudWatchLogs: new AWS.CloudWatchLogs(),
+      logGroupName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'testing',
+      logStreamName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'first'
+    })
+  ]
+})
+
 export default winston;
+export {alphaLogger, etherLogger};

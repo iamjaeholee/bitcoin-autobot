@@ -69,7 +69,7 @@ var log_cloudwatch_1 = require("../utils/log-cloudwatch");
 var DataHandler = /** @class */ (function () {
     function DataHandler() {
     }
-    DataHandler.prototype.putTenData = function (startDate) {
+    DataHandler.prototype.putTenData = function (startDate, market) {
         var e_1, _a;
         return __awaiter(this, void 0, void 0, function () {
             var dateInstance, _b, _c, result, e_1_1, error_1;
@@ -83,7 +83,7 @@ var DataHandler = /** @class */ (function () {
                         _d.label = 2;
                     case 2:
                         _d.trys.push([2, 7, 8, 13]);
-                        _b = __asyncValues(this.putTenDataGenerator(dateInstance));
+                        _b = __asyncValues(this.putTenDataGenerator(dateInstance, market));
                         _d.label = 3;
                     case 3: return [4 /*yield*/, _b.next()];
                     case 4:
@@ -118,7 +118,7 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.putTenDataGenerator = function (date) {
+    DataHandler.prototype.putTenDataGenerator = function (date, market) {
         return __asyncGenerator(this, arguments, function putTenDataGenerator_1() {
             var dateInstance, i, daysCandleConfig, result, params, output;
             return __generator(this, function (_a) {
@@ -129,12 +129,12 @@ var DataHandler = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         if (!(i < 10)) return [3 /*break*/, 6];
-                        daysCandleConfig = utils_1.getDayCandleConfig(dateInstance).ethDaysCandleConfig;
+                        daysCandleConfig = utils_1.getDayCandleConfig(dateInstance, market).daysCandleConfig;
                         return [4 /*yield*/, __await(api_handler_1.default.getInformation(daysCandleConfig))];
                     case 2:
                         result = _a.sent();
                         params = {
-                            TableName: "Ethereum",
+                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Item: {
                                 date: { S: date_fns_1.format(dateInstance, "yyyy-MM-dd") },
                                 data: { S: JSON.stringify(result[0]) },
@@ -154,8 +154,9 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.putDataWithEms = function (startDate, endDate) {
+    DataHandler.prototype.putDataWithEms = function (startDate, endDate, market) {
         var e_2, _a;
+        if (market === void 0) { market = ''; }
         return __awaiter(this, void 0, void 0, function () {
             var startDateInstance, endDateInstance, _b, _c, result, e_2_1, error_2;
             return __generator(this, function (_d) {
@@ -169,7 +170,7 @@ var DataHandler = /** @class */ (function () {
                         _d.label = 2;
                     case 2:
                         _d.trys.push([2, 7, 8, 13]);
-                        _b = __asyncValues(this.putDataWithEmsGenerator(startDateInstance, endDateInstance));
+                        _b = __asyncValues(this.putDataWithEmsGenerator(startDateInstance, endDateInstance, market));
                         _d.label = 3;
                     case 3: return [4 /*yield*/, _b.next()];
                     case 4:
@@ -204,7 +205,7 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.putDataWithEmsGenerator = function (startDate, endDate) {
+    DataHandler.prototype.putDataWithEmsGenerator = function (startDate, endDate, market) {
         var _a, _b;
         return __asyncGenerator(this, arguments, function putDataWithEmsGenerator_1() {
             var startDateInstance, endDateInstance, _loop_1;
@@ -219,7 +220,7 @@ var DataHandler = /** @class */ (function () {
                             return __generator(this, function (_d) {
                                 switch (_d.label) {
                                     case 0:
-                                        startDaysCandleConfig = utils_1.getDayCandleConfig(startDateInstance).ethDaysCandleConfig;
+                                        startDaysCandleConfig = utils_1.getDayCandleConfig(startDateInstance, market).daysCandleConfig;
                                         return [4 /*yield*/, __await(new Promise(function (resolve) {
                                                 return setTimeout(function () { return __awaiter(_this, void 0, void 0, function () { var _a; return __generator(this, function (_b) {
                                                     switch (_b.label) {
@@ -234,7 +235,7 @@ var DataHandler = /** @class */ (function () {
                                         result = (_d.sent());
                                         yesterDayInstance = new Date(date_fns_1.sub(startDateInstance, { days: 1 }));
                                         getParams = {
-                                            TableName: config_1.ETHTABLE,
+                                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                                             Key: {
                                                 date: { S: date_fns_1.format(yesterDayInstance, "yyyy-MM-dd") },
                                             },
@@ -246,9 +247,9 @@ var DataHandler = /** @class */ (function () {
                                         params = [result[0].trade_price, yesterdayEms];
                                         ems = ems_computer_1.default.computeEms.apply(ems_computer_1.default, params);
                                         // logging
-                                        log_cloudwatch_1.logDayCandle(result[0], ems);
+                                        log_cloudwatch_1.logDayCandle(result[0], ems, market);
                                         putParams = {
-                                            TableName: "Ethereum",
+                                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                                             Item: {
                                                 date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
                                                 data: { S: JSON.stringify(result[0]) },
@@ -278,9 +279,10 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.putDataWithAverEms = function (startDate) {
+    DataHandler.prototype.putDataWithAverEms = function (startDate, market) {
         var e_3, _a;
         var _b, _c;
+        if (market === void 0) { market = ''; }
         return __awaiter(this, void 0, void 0, function () {
             var startDateInstance, sum, _d, _e, result_1, outputData, e_3_1, averEms, startDaysCandleConfig, result, putParams, _f;
             return __generator(this, function (_g) {
@@ -291,7 +293,7 @@ var DataHandler = /** @class */ (function () {
                         _g.label = 1;
                     case 1:
                         _g.trys.push([1, 6, 7, 12]);
-                        _d = __asyncValues(this.putDataWithAverEmsGenerator(startDateInstance));
+                        _d = __asyncValues(this.putDataWithAverEmsGenerator(startDateInstance, market));
                         _g.label = 2;
                     case 2: return [4 /*yield*/, _d.next()];
                     case 3:
@@ -320,12 +322,12 @@ var DataHandler = /** @class */ (function () {
                     case 11: return [7 /*endfinally*/];
                     case 12:
                         averEms = sum / 10;
-                        startDaysCandleConfig = utils_1.getDayCandleConfig(startDateInstance).ethDaysCandleConfig;
+                        startDaysCandleConfig = utils_1.getDayCandleConfig(startDateInstance, market).daysCandleConfig;
                         return [4 /*yield*/, api_handler_1.default.getInformation(startDaysCandleConfig)];
                     case 13:
                         result = _g.sent();
                         putParams = {
-                            TableName: config_1.ETHTABLE,
+                            TableName: market === 'ethreum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Item: {
                                 date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
                                 data: { S: JSON.stringify(result[0]) },
@@ -347,7 +349,7 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.putDataWithAverEmsGenerator = function (date) {
+    DataHandler.prototype.putDataWithAverEmsGenerator = function (date, market) {
         return __asyncGenerator(this, arguments, function putDataWithAverEmsGenerator_1() {
             var i, startDateInstance, getParams, result;
             return __generator(this, function (_a) {
@@ -360,7 +362,7 @@ var DataHandler = /** @class */ (function () {
                         if (!(i < 10)) return [3 /*break*/, 5];
                         startDateInstance = date_fns_1.sub(startDateInstance, { days: 1 });
                         getParams = {
-                            TableName: config_1.ETHTABLE,
+                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Key: {
                                 date: { S: date_fns_1.format(startDateInstance, "yyyy-MM-dd") },
                             },
@@ -511,8 +513,9 @@ var DataHandler = /** @class */ (function () {
      * @param endDate exclude
      * @returns
      */
-    DataHandler.prototype.putDataQuarterly = function (startDate, endDate) {
+    DataHandler.prototype.putDataQuarterly = function (startDate, endDate, market) {
         var e_5, _a;
+        if (market === void 0) { market = ''; }
         return __awaiter(this, void 0, void 0, function () {
             var startDateInstance, endDateInstance, _b, _c, result, e_5_1, error_4;
             return __generator(this, function (_d) {
@@ -526,7 +529,7 @@ var DataHandler = /** @class */ (function () {
                         _d.label = 2;
                     case 2:
                         _d.trys.push([2, 7, 8, 13]);
-                        _b = __asyncValues(this.putDataQuarterlyGenerator(startDateInstance, endDateInstance));
+                        _b = __asyncValues(this.putDataQuarterlyGenerator(startDateInstance, endDateInstance, market));
                         _d.label = 3;
                     case 3: return [4 /*yield*/, _b.next()];
                     case 4:
@@ -561,7 +564,7 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.putDataQuarterlyGenerator = function (startDate, endDate) {
+    DataHandler.prototype.putDataQuarterlyGenerator = function (startDate, endDate, market) {
         return __asyncGenerator(this, arguments, function putDataQuarterlyGenerator_1() {
             var startDateInstance, endDateInstance, _loop_3;
             var _this = this;
@@ -589,7 +592,7 @@ var DataHandler = /** @class */ (function () {
                                     case 1:
                                         result = (_b.sent());
                                         // logging
-                                        log_cloudwatch_1.logQuarterCandle(result[0]);
+                                        log_cloudwatch_1.logQuarterCandle(result[0], market);
                                         putParams = {
                                             TableName: config_1.ETHTABLE_QUARTER,
                                             Item: {

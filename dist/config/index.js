@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ETHTABLE_QUARTER = exports.ETHTABLE = exports.ETHEREUM = exports.REGION = void 0;
+exports.ALPHATABLE_QUARTER = exports.ALPHATABLE = exports.ALPHA = exports.ETHTABLE_QUARTER = exports.ETHTABLE = exports.ETHEREUM = exports.REGION = void 0;
 exports.REGION = 'ap-northeast-2';
 exports.ETHEREUM = 'KRW-ETH';
 exports.ETHTABLE = 'Ethereum';
 exports.ETHTABLE_QUARTER = 'Ethereum-quarter';
+exports.ALPHA = 'KRW-AQT';
+exports.ALPHATABLE = 'alpha';
+exports.ALPHATABLE_QUARTER = 'alpha-quarter';

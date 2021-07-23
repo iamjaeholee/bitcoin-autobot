@@ -1,7 +1,7 @@
 import {Method} from 'axios';
 import {ETHEREUM, ALPHA} from '../config';
 
-export const getDayCandleConfig = (toDate: Date, market: string) => {
+export const getDayCandleConfig = (toDate: Date, market: string = '') => {
   const daysCandleConfig = {
     method: 'get' as Method,
     url: 'https://api.upbit.com/v1/candles/days',
