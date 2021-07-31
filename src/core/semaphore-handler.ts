@@ -1,32 +1,36 @@
 import dbManager from '../database';
+import {mapper} from '../utils/mapper';
 
 class SemaphoreHandler {
 	constructor (){};
 
-	public async getSemaphore(){
-    const params = {
-      TableName: "semaphore",
+	public async getSemaphore(market: string = ''){
+    const marketArgs = mapper.get(market);
+
+    const params = marketArgs ? {
+      TableName: marketArgs[3],
       Key: {
         name: {S: 'startDate'}
       },
-    }
+    } : undefined
 
-		const result = await dbManager.getItem(params);
+		const result = params ? await dbManager.getItem(params) : undefined;
 		const startDate = (result?.Item?.data?.S as string);
 
 		return startDate;
 	}
 
-	public async setSemaphore(date: string){
-    const params = {
-      TableName: "semaphore",
+	public async setSemaphore(date: string, market:string = ''){
+    const marketArgs = mapper.get(market);
+    const params = marketArgs ? {
+      TableName: marketArgs[3],
       Item: {
         name: {S: 'startDate'},
         data: {S: date},
       },
-    }
+    } : undefined
 
-    const result = await dbManager.putItem(params);
+    const result = params ? await dbManager.putItem(params) : undefined;
 
 		return result;
 	}

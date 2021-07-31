@@ -7,15 +7,16 @@ import emsComputer from './core/ems-computer';
 import { ETHTABLE, ETHEREUM, ALPHATABLE } from "./config";
 import DbManager from "./database";
 import { BADQUERY } from 'dns';
+import semaphoreHandler from './core/semaphore-handler';
 import {etherLogger, alphaLogger} from './utils/logger';
 
 
 // put data
 // (async () => {
-//   // const result = await dataHandler.putDataWithEms({year: 2020, month: 10, date:28}, {year:2021, month:6, date:23}, 'alpha');
+//   const result = await dataHandler.putDataWithEms({year: 2021, month: 6, date:23}, {year:2021, month:6, date:25}, 'alpha');
 //   // const result = await dataHandler.putTenData({year: 2020, month: 10, date:18}, 'alpha');
 //   // const result = await dataHandler.putDataWithAverEms({year: 2020, month: 10, date:28}, 'alpha');
-//   const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:23, hour: 12}, {year:2021, month:6, date:24, hour: 0}, 'alpha');
+//   // const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:23, hour: 12}, {year:2021, month:6, date:24, hour: 0}, 'alpha');
 //   // const result = await dataHandler.putDataToExcel();
 
 //   // const today = new Date(Date.UTC(2021, 5, 20));
@@ -30,7 +31,6 @@ import {etherLogger, alphaLogger} from './utils/logger';
 // TODO ScheduleJob to UTC time
 // UTC 9
 const sellAll = () => {}; // mock function
-const setSemaphore = () => {}; // mock function
 const buy = () => {}; // mock function
 
 console.log('service has been started');
@@ -90,8 +90,10 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
         logger.info(`변화율 <= -10%`);
         logger.info(`&&&&&&&&&&&&&&& 오늘은 사는 날인 갑다 ~! *매수플로우 진행*`);
       } else {
+        // waiting flow
         logger.info(`변화율 > -10%`);
         logger.info(`&&&&&&&&&&&&&&& 오늘은 김대기하는 날인 갑다 ~! *김대기*`);
+        semaphoreHandler.setSemaphore(today.toISOString().substr(0, 10), 'alpha');
       }
     }
     else {
