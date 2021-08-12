@@ -624,6 +624,44 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
+    DataHandler.prototype.getAverAndK = function (today, market) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var givenDate, sum, i, getParams, retrievedData, parsedData, diff, av;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        givenDate = today;
+                        sum = 0;
+                        i = 0;
+                        _c.label = 1;
+                    case 1:
+                        if (!(i < 3)) return [3 /*break*/, 4];
+                        getParams = {
+                            TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
+                            Key: {
+                                date: { S: givenDate.toISOString().substr(0, 10) },
+                                hour: { S: givenDate.getUTCHours().toString() }
+                            },
+                        };
+                        return [4 /*yield*/, database_1.default.getItem(getParams)];
+                    case 2:
+                        retrievedData = _c.sent();
+                        parsedData = JSON.parse((_b = (_a = retrievedData === null || retrievedData === void 0 ? void 0 : retrievedData.Item) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.S);
+                        diff = parsedData.high_price - parsedData.low_price;
+                        sum += diff;
+                        givenDate = date_fns_1.sub(givenDate, { hours: 4 });
+                        _c.label = 3;
+                    case 3:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        av = Math.floor(sum / 3);
+                        return [2 /*return*/, av];
+                }
+            });
+        });
+    };
     return DataHandler;
 }());
 exports.default = new DataHandler();

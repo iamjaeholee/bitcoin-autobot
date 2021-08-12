@@ -372,6 +372,33 @@ class DataHandler {
       startDateInstance = add(startDateInstance, { hours: 4 });
     }
   }
+
+  public async getAverAndK(today: Date, market: string) {
+    let givenDate = today;
+    let sum = 0; 
+
+    for(let i=0; i<3; i++){
+      const getParams = {
+        TableName: market === 'ethereum' ? ETHTABLE_QUARTER : 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        Key: {
+          date: { S: givenDate.toISOString().substr(0, 10)},
+          hour: { S: givenDate.getUTCHours().toString()}
+        },
+      };
+
+      const retrievedData = await DbManager.getItem(getParams);
+      const parsedData = JSON.parse(retrievedData?.Item?.data?.S as string)
+      const diff = parsedData.high_price - parsedData.low_price;
+      sum += diff;
+
+      givenDate = sub(givenDate, { hours: 4});
+    }
+
+    const av = Math.floor(sum / 3);
+
+
+    return av;
+  }
 }
 
 export default new DataHandler();

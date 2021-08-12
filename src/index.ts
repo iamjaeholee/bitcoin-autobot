@@ -10,24 +10,6 @@ import { BADQUERY } from 'dns';
 import semaphoreHandler from './core/semaphore-handler';
 import {etherLogger, alphaLogger} from './utils/logger';
 
-
-// put data
-// (async () => {
-//   const result = await dataHandler.putDataWithEms({year: 2021, month: 6, date:23}, {year:2021, month:6, date:25}, 'alpha');
-//   // const result = await dataHandler.putTenData({year: 2020, month: 10, date:18}, 'alpha');
-//   // const result = await dataHandler.putDataWithAverEms({year: 2020, month: 10, date:28}, 'alpha');
-//   // const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:23, hour: 12}, {year:2021, month:6, date:24, hour: 0}, 'alpha');
-//   // const result = await dataHandler.putDataToExcel();
-
-//   // const today = new Date(Date.UTC(2021, 5, 20));
-//   // const nextDay = add(today, {days:1});
-
-
-//   result ? console.log('success') : console.log('fail');
-// })();
-
-// scheduler
-
 // TODO ScheduleJob to UTC time
 // UTC 9
 const sellAll = () => {}; // mock function
@@ -36,7 +18,7 @@ const buy = () => {}; // mock function
 console.log('service has been started');
 
 schedule.scheduleJob('0 0 0 * * *', async () => {
-  const market = 'alpha' as string;
+  const market = process.env.MARKET as string;
   const today = new Date(Date.now());
   const nextDay = add(today, {days:1});
 	const logger = market === 'ethereum' ? etherLogger : 'alpha' ? alphaLogger : etherLogger;
@@ -44,7 +26,7 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
   await dataHandler.putDataWithEms(
     {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate()},
     {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate()},
-    'alpha'
+    market
   )
 
   // 판단 플로우
@@ -93,7 +75,7 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
         // waiting flow
         logger.info(`변화율 > -10%`);
         logger.info(`&&&&&&&&&&&&&&& 오늘은 김대기하는 날인 갑다 ~! *김대기*`);
-        semaphoreHandler.setSemaphore(today.toISOString().substr(0, 10), 'alpha');
+        semaphoreHandler.setSemaphore(today.toISOString().substr(0, 10), market);
       }
     }
     else {
@@ -115,6 +97,6 @@ schedule.scheduleJob('0 0 */4 * * *', async () => {
   dataHandler.putDataQuarterly(
     {year:today.getUTCFullYear(), month:today.getUTCMonth(), date: today.getUTCDate(), hour: today.getUTCHours()},
     {year:nextDay.getUTCFullYear(), month:nextDay.getUTCMonth(), date: nextDay.getUTCDate(), hour: nextDay.getUTCHours()},
-    'alpha',
+    process.env.MARKET,
   )
 });

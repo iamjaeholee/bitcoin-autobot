@@ -13,7 +13,7 @@ describe('EmsComputer class computeEms function', function () {
     it("should return 8.9 with getting 9 tradeprice and 8 prevEms", function () {
         var params = [9, 8];
         var result = ems_computer_1.default.computeEms.apply(ems_computer_1.default, params);
-        expect(result).toBe(8.9);
+        expect(result).toBe(8);
     });
 });
 describe('EmsComputer class checkPotential function', function () {

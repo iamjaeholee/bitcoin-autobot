@@ -99,13 +99,25 @@ describe('DataHandler class', function () {
     //   expect(result).toBe(true);
     // })
     it('should put data from startDate to endDate with ems value using putDataWithEms', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
+        return __generator(this, function (_a) {
+            // const result = await dataHandler.putDataWithEms({year: 2021, month: 5, date:19}, {year:2021, month:5, date:20});
+            // expect(result).toBe(true);
+            expect(1).toBe(1);
+            return [2 /*return*/];
+        });
+    }); });
+    it('should getAverAndK with getAverAndK fucntion', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var today, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: 2021, month: 5, date: 19 }, { year: 2021, month: 5, date: 20 })];
+                case 0:
+                    today = new Date(Date.UTC(2021, 7, 2, 0));
+                    console.log(today.toISOString().substr(0, 10));
+                    console.log(today.getUTCHours().toString());
+                    return [4 /*yield*/, data_handler_1.default.getAverAndK(today, 'alpha')];
                 case 1:
                     result = _a.sent();
-                    expect(result).toBe(true);
+                    expect(result).toBe(Math.floor(400 / 3));
                     return [2 /*return*/];
             }
         });

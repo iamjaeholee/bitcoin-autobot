@@ -39,33 +39,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var semaphore_handler_1 = __importDefault(require("../semaphore-handler"));
-var date_fns_1 = require("date-fns");
-describe('semaphore handler', function () {
-    it('should get semaphore from DB', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, semaphore_handler_1.default.getSemaphore('alpha')];
-                case 1:
-                    result = _a.sent();
-                    console.log(result);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    it('should set semaphore to DB', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var date, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    date = date_fns_1.sub(new Date(Date.now()), { days: 1 });
-                    return [4 /*yield*/, semaphore_handler_1.default.setSemaphore(date_fns_1.format(date, "yyyy-MM-dd"), 'alpha')];
-                case 1:
-                    result = _a.sent();
-                    console.log(result);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-});
+var data_handler_1 = __importDefault(require("../core/data-handler"));
+// put data
+(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: 2021, month: 7, date: 12 }, { year: 2021, month: 7, date: 13 }, 'ethereum')];
+            case 1:
+                result = _a.sent();
+                // const result = await dataHandler.putTenData({year: 2020, month: 10, date:18}, 'alpha');
+                // const result = await dataHandler.putDataWithAverEms({year: 2020, month: 10, date:28}, 'alpha');
+                // const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:23, hour: 12}, {year:2021, month:6, date:24, hour: 0}, 'alpha');
+                // const result = await dataHandler.putDataToExcel();
+                // const today = new Date(Date.UTC(2021, 5, 20));
+                // const nextDay = add(today, {days:1});
+                result ? console.log('success') : console.log('fail');
+                return [2 /*return*/];
+        }
+    });
+}); })();

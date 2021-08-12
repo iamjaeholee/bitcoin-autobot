@@ -40,48 +40,67 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var database_1 = __importDefault(require("../database"));
+var mapper_1 = require("../utils/mapper");
 var SemaphoreHandler = /** @class */ (function () {
     function SemaphoreHandler() {
     }
     ;
-    SemaphoreHandler.prototype.getSemaphore = function () {
+    SemaphoreHandler.prototype.getSemaphore = function (market) {
         var _a, _b;
+        if (market === void 0) { market = ''; }
         return __awaiter(this, void 0, void 0, function () {
-            var params, result, startDate;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var marketArgs, params, result, _c, startDate;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
-                        params = {
-                            TableName: "semaphore",
+                        marketArgs = mapper_1.mapper.get(market);
+                        params = marketArgs ? {
+                            TableName: marketArgs[3],
                             Key: {
                                 name: { S: 'startDate' }
                             },
-                        };
+                        } : undefined;
+                        if (!params) return [3 /*break*/, 2];
                         return [4 /*yield*/, database_1.default.getItem(params)];
                     case 1:
-                        result = _c.sent();
+                        _c = _d.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        _c = undefined;
+                        _d.label = 3;
+                    case 3:
+                        result = _c;
                         startDate = (_b = (_a = result === null || result === void 0 ? void 0 : result.Item) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.S;
                         return [2 /*return*/, startDate];
                 }
             });
         });
     };
-    SemaphoreHandler.prototype.setSemaphore = function (date) {
+    SemaphoreHandler.prototype.setSemaphore = function (date, market) {
+        if (market === void 0) { market = ''; }
         return __awaiter(this, void 0, void 0, function () {
-            var params, result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var marketArgs, params, result, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        params = {
-                            TableName: "semaphore",
+                        marketArgs = mapper_1.mapper.get(market);
+                        params = marketArgs ? {
+                            TableName: marketArgs[3],
                             Item: {
                                 name: { S: 'startDate' },
                                 data: { S: date },
                             },
-                        };
+                        } : undefined;
+                        if (!params) return [3 /*break*/, 2];
                         return [4 /*yield*/, database_1.default.putItem(params)];
                     case 1:
-                        result = _a.sent();
+                        _a = _b.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        _a = undefined;
+                        _b.label = 3;
+                    case 3:
+                        result = _a;
                         return [2 /*return*/, result];
                 }
             });

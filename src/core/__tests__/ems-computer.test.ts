@@ -12,7 +12,7 @@ describe('EmsComputer class computeEms function', () => {
     const params = [9, 8];
 
     const result = EmsComputer.computeEms(...params);
-    expect(result).toBe(8.9);
+    expect(result).toBe(8);
   })
 });
 
