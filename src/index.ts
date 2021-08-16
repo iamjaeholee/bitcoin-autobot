@@ -8,30 +8,17 @@ import { ETHTABLE, ETHEREUM, ALPHATABLE } from "./config";
 import DbManager from "./database";
 import { BADQUERY } from "dns";
 import semaphoreHandler from "./core/semaphore-handler";
-import { etherLogger, alphaLogger, testLogger } from "./utils/logger";
+import {logger} from "./utils/logger";
+import {writeAverAndK} from './utils/log-writer';
 
 // TODO ScheduleJob to UTC time
 // UTC 9
-const sellAll = () => {}; // mock function
-const buy = () => {}; // mock function
-
 console.log("service has been started");
-
-// setup Logger
-const logger =
-  process.env.NODE_ENV === "production"
-    ? process.env.MARKET === "ethereum"
-      ? etherLogger
-      : "alpha"
-      ? alphaLogger
-      : etherLogger
-    : testLogger;
 
 schedule.scheduleJob("0 0 0 * * *", async () => {
   const market = process.env.MARKET as string;
   const today = new Date(Date.now());
   const nextDay = add(today, { days: 1 });
-  // const logger = market === 'ethereum' ? etherLogger : 'alpha' ? alphaLogger : etherLogger;
 
   await dataHandler.putDataWithEms(
     {
@@ -139,6 +126,6 @@ schedule.scheduleJob("0 0 */4 * * *", async () => {
     process.env.MARKET
   );
 
-  const { av } = await dataHandler.getAverAndK(today);
-  logger.info(`====== Av is ${av}`);
+  const result = await dataHandler.getAverAndK(today);
+  writeAverAndK(result);
 });

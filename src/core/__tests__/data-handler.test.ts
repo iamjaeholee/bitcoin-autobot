@@ -93,5 +93,22 @@ describe('DataHandler class', () => {
         done();
       });
     })
+
+    it('should return proper K', (done) => {
+      const today = new Date(Date.UTC(2021, 7, 2, 0));
+      const expectedAv = 400/3;
+      let digits = Math.floor(1-Math.log10(expectedAv));
+      digits = Math.pow(10, digits);
+      const expectedK = Math.round(expectedAv * digits) / digits;
+
+      console.log(expectedK)
+
+      dataHandler.getAverAndK(today).then(({k}) => {
+        expect(k).toMatchSnapshot();
+        expect(k).toBe(expectedK);
+        done();
+      });
+
+    })
   })
 })

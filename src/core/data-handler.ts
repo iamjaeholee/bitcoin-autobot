@@ -397,9 +397,17 @@ class DataHandler {
     const av = (sum / 3);
 
 
+    const k = this.calcRoundXL(av,(Math.floor(1-Math.log10(av))));
+
     return {
-      av
+      av,
+      k
     };
+  }
+
+  private calcRoundXL(num: number, digits: number){
+      digits = Math.pow(10, digits);
+      return Math.round(num * digits) / digits;
   }
 }
 

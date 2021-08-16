@@ -38,4 +38,15 @@ const etherLogger = winston.createLogger({
 const testLogger = winston.createLogger();
 
 export default winston;
-export {alphaLogger, etherLogger, testLogger};
+
+// setup Logger
+const logger =
+  process.env.NODE_ENV === "production"
+    ? process.env.MARKET === "ethereum"
+      ? etherLogger
+      : "alpha"
+      ? alphaLogger
+      : etherLogger
+    : testLogger;
+
+export {logger};

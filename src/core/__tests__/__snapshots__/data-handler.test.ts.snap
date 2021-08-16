@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`DataHandler class getAverAndK function should return proper K 1`] = `100`;
+
 exports[`DataHandler class getAverAndK function should return proper av 1`] = `133.33333333333334`;
