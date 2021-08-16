@@ -46,13 +46,12 @@ var config_1 = require("./config");
 var database_1 = __importDefault(require("./database"));
 var semaphore_handler_1 = __importDefault(require("./core/semaphore-handler"));
 var logger_1 = require("./utils/logger");
+var log_writer_1 = require("./utils/log-writer");
 // TODO ScheduleJob to UTC time
 // UTC 9
-var sellAll = function () { }; // mock function
-var buy = function () { }; // mock function
-console.log('service has been started');
-node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaiter(void 0, void 0, void 0, function () {
-    var market, today, nextDay, logger, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
+console.log("service has been started");
+node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var market, today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -60,20 +59,25 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
                 market = process.env.MARKET;
                 today = new Date(Date.now());
                 nextDay = date_fns_1.add(today, { days: 1 });
-                logger = market === 'ethereum' ? logger_1.etherLogger : 'alpha' ? logger_1.alphaLogger : logger_1.etherLogger;
-                return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: today.getUTCFullYear(), month: today.getUTCMonth(), date: today.getUTCDate() }, { year: nextDay.getUTCFullYear(), month: nextDay.getUTCMonth(), date: nextDay.getUTCDate() }, market)
-                    // 판단 플로우
-                ];
+                return [4 /*yield*/, data_handler_1.default.putDataWithEms({
+                        year: today.getUTCFullYear(),
+                        month: today.getUTCMonth(),
+                        date: today.getUTCDate(),
+                    }, {
+                        year: nextDay.getUTCFullYear(),
+                        month: nextDay.getUTCMonth(),
+                        date: nextDay.getUTCDate(),
+                    }, market)];
             case 1:
                 _j.sent();
                 getParams = {
-                    TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    TableName: market === "ethereum" ? config_1.ETHTABLE : "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
                     Key: {
                         date: { S: date_fns_1.format(today, "yyyy-MM-dd") },
                     },
                 };
                 prevGetParams = {
-                    TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    TableName: market === "ethereum" ? config_1.ETHTABLE : "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
                     Key: {
                         date: { S: date_fns_1.format(date_fns_1.sub(today, { days: 1 }), "yyyy-MM-dd") },
                     },
@@ -92,32 +96,32 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
                 beforeYesterDayParsedData = JSON.parse((_f = (_e = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _e === void 0 ? void 0 : _e.data) === null || _f === void 0 ? void 0 : _f.S);
                 beforeYesterDayEms = Number((_h = (_g = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _g === void 0 ? void 0 : _g.ems) === null || _h === void 0 ? void 0 : _h.N);
                 // trade_price <= ems sell all ETH
-                logger.info("====== \uD310\uB2E8 \uD50C\uB85C\uC6B0 ======");
+                logger_1.logger.info("====== \uD310\uB2E8 \uD50C\uB85C\uC6B0 ======");
                 if (parsedData.trade_price < yesterdayEms) {
-                    logger.info("trade_price: " + parsedData.trade_price);
-                    logger.info("ema: " + yesterdayEms);
-                    logger.info("====== trade_price < ema ======");
-                    logger.info("2\uC77C\uC804 trade_price: " + beforeYesterDayParsedData.trade_price);
+                    logger_1.logger.info("trade_price: " + parsedData.trade_price);
+                    logger_1.logger.info("ema: " + yesterdayEms);
+                    logger_1.logger.info("====== trade_price < ema ======");
+                    logger_1.logger.info("2\uC77C\uC804 trade_price: " + beforeYesterDayParsedData.trade_price);
                     diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
-                    logger.info("1\uC77C\uC804 trade_price - 2\uC77C\uC804 trade_price: " + diff);
+                    logger_1.logger.info("1\uC77C\uC804 trade_price - 2\uC77C\uC804 trade_price: " + diff);
                     diffRate = diff / beforeYesterDayParsedData.trade_price;
-                    logger.info("\uBCC0\uD654\uC728: " + diffRate);
+                    logger_1.logger.info("\uBCC0\uD654\uC728: " + diffRate);
                     if (diffRate <= -0.1) {
-                        logger.info("\uBCC0\uD654\uC728 <= -10%");
-                        logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uC0AC\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uB9E4\uC218\uD50C\uB85C\uC6B0 \uC9C4\uD589*");
+                        logger_1.logger.info("\uBCC0\uD654\uC728 <= -10%");
+                        logger_1.logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uC0AC\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uB9E4\uC218\uD50C\uB85C\uC6B0 \uC9C4\uD589*");
                     }
                     else {
                         // waiting flow
-                        logger.info("\uBCC0\uD654\uC728 > -10%");
-                        logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uAE40\uB300\uAE30\uD558\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uAE40\uB300\uAE30*");
+                        logger_1.logger.info("\uBCC0\uD654\uC728 > -10%");
+                        logger_1.logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uAE40\uB300\uAE30\uD558\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uAE40\uB300\uAE30*");
                         semaphore_handler_1.default.setSemaphore(today.toISOString().substr(0, 10), market);
                     }
                 }
                 else {
-                    logger.info("trade_price: " + parsedData.trade_price);
-                    logger.info("ema: " + yesterdayEms);
-                    logger.info("====== trade_price >= ema ======");
-                    logger.info("====== Min Max \uAD6C\uD604 \uC608\uC815");
+                    logger_1.logger.info("trade_price: " + parsedData.trade_price);
+                    logger_1.logger.info("ema: " + yesterdayEms);
+                    logger_1.logger.info("====== trade_price >= ema ======");
+                    logger_1.logger.info("====== Min Max \uAD6C\uD604 \uC608\uC815");
                 }
                 return [3 /*break*/, 6];
             case 5:
@@ -129,12 +133,31 @@ node_schedule_1.default.scheduleJob('0 0 0 * * *', function () { return __awaite
     });
 }); });
 // every 4 hours schedule
-node_schedule_1.default.scheduleJob('0 0 */4 * * *', function () { return __awaiter(void 0, void 0, void 0, function () {
-    var today, nextDay;
+node_schedule_1.default.scheduleJob("0 0 */4 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var today, nextDay, result;
     return __generator(this, function (_a) {
-        today = new Date(Date.now());
-        nextDay = date_fns_1.add(today, { hours: 4 });
-        data_handler_1.default.putDataQuarterly({ year: today.getUTCFullYear(), month: today.getUTCMonth(), date: today.getUTCDate(), hour: today.getUTCHours() }, { year: nextDay.getUTCFullYear(), month: nextDay.getUTCMonth(), date: nextDay.getUTCDate(), hour: nextDay.getUTCHours() }, process.env.MARKET);
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                today = new Date(Date.now());
+                nextDay = date_fns_1.add(today, { hours: 4 });
+                return [4 /*yield*/, data_handler_1.default.putDataQuarterly({
+                        year: today.getUTCFullYear(),
+                        month: today.getUTCMonth(),
+                        date: today.getUTCDate(),
+                        hour: today.getUTCHours(),
+                    }, {
+                        year: nextDay.getUTCFullYear(),
+                        month: nextDay.getUTCMonth(),
+                        date: nextDay.getUTCDate(),
+                        hour: nextDay.getUTCHours(),
+                    }, process.env.MARKET)];
+            case 1:
+                _a.sent();
+                return [4 /*yield*/, data_handler_1.default.getAverAndK(today)];
+            case 2:
+                result = _a.sent();
+                log_writer_1.writeAverAndK(result);
+                return [2 /*return*/];
+        }
     });
 }); });

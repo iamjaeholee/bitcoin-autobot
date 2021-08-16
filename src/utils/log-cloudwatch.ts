@@ -1,8 +1,6 @@
-import {etherLogger, alphaLogger} from './logger';
+import {logger} from './logger';
 
 function logDayCandle(dayCandle: any, ema: number, market:string = ''){
-	const logger = market === 'ethereum' ? etherLogger : 'alpha' ? alphaLogger : etherLogger;
-
 	// start line
 	logger.info('********* Lets start the game Confess ! *************');
 	logger.info(`====== trying to fetch dayCandle ======`);
@@ -17,8 +15,6 @@ function logDayCandle(dayCandle: any, ema: number, market:string = ''){
 }
 
 function logQuarterCandle(quarterCandle: any, market:string = ''){
-	const logger = market === 'ethereum' ? etherLogger : 'alpha' ? alphaLogger : etherLogger;
-
 	// start line
 	logger.info('********* Lets start the game Confess ! *************');
 	logger.info(`====== trying to fetch quarterCandle ======`);

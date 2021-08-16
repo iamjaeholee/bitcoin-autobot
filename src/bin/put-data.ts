@@ -8,7 +8,6 @@ import { ETHTABLE, ETHEREUM, ALPHATABLE } from "../config";
 import DbManager from "../database";
 import { BADQUERY } from 'dns';
 import semaphoreHandler from '../core/semaphore-handler';
-import {etherLogger, alphaLogger} from '../utils/logger';
 
 // put data
 (async () => {

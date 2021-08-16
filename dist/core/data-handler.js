@@ -624,10 +624,10 @@ var DataHandler = /** @class */ (function () {
             });
         });
     };
-    DataHandler.prototype.getAverAndK = function (today, market) {
+    DataHandler.prototype.getAverAndK = function (today) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            var givenDate, sum, i, getParams, retrievedData, parsedData, diff, av;
+            var givenDate, sum, i, getParams, retrievedData, parsedData, diff, av, k;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -638,7 +638,7 @@ var DataHandler = /** @class */ (function () {
                     case 1:
                         if (!(i < 3)) return [3 /*break*/, 4];
                         getParams = {
-                            TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
+                            TableName: process.env.MARKET === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
                             Key: {
                                 date: { S: givenDate.toISOString().substr(0, 10) },
                                 hour: { S: givenDate.getUTCHours().toString() }
@@ -656,11 +656,19 @@ var DataHandler = /** @class */ (function () {
                         i++;
                         return [3 /*break*/, 1];
                     case 4:
-                        av = Math.floor(sum / 3);
-                        return [2 /*return*/, av];
+                        av = (sum / 3);
+                        k = this.calcRoundXL(av, (Math.floor(1 - Math.log10(av))));
+                        return [2 /*return*/, {
+                                av: av,
+                                k: k
+                            }];
                 }
             });
         });
+    };
+    DataHandler.prototype.calcRoundXL = function (num, digits) {
+        digits = Math.pow(10, digits);
+        return Math.round(num * digits) / digits;
     };
     return DataHandler;
 }());

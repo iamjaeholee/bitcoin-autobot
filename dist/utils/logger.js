@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.etherLogger = exports.alphaLogger = void 0;
+exports.logger = void 0;
 var config_1 = require("../config");
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var winston_1 = __importDefault(require("winston"));
@@ -26,7 +26,6 @@ var alphaLogger = winston_1.default.createLogger({
         })
     ]
 });
-exports.alphaLogger = alphaLogger;
 var etherLogger = winston_1.default.createLogger({
     transports: [
         new winston_cloudwatch_1.default({
@@ -36,5 +35,14 @@ var etherLogger = winston_1.default.createLogger({
         })
     ]
 });
-exports.etherLogger = etherLogger;
+var testLogger = winston_1.default.createLogger();
 exports.default = winston_1.default;
+// setup Logger
+var logger = process.env.NODE_ENV === "production"
+    ? process.env.MARKET === "ethereum"
+        ? etherLogger
+        : "alpha"
+            ? alphaLogger
+            : etherLogger
+    : testLogger;
+exports.logger = logger;

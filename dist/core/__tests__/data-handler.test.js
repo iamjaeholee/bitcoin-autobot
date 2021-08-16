@@ -106,20 +106,30 @@ describe('DataHandler class', function () {
             return [2 /*return*/];
         });
     }); });
-    it('should getAverAndK with getAverAndK fucntion', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var today, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    today = new Date(Date.UTC(2021, 7, 2, 0));
-                    console.log(today.toISOString().substr(0, 10));
-                    console.log(today.getUTCHours().toString());
-                    return [4 /*yield*/, data_handler_1.default.getAverAndK(today, 'alpha')];
-                case 1:
-                    result = _a.sent();
-                    expect(result).toBe(Math.floor(400 / 3));
-                    return [2 /*return*/];
-            }
+    describe('getAverAndK function', function () {
+        it('should return proper av', function (done) {
+            //205 + 110 + 85 = 400 
+            var today = new Date(Date.UTC(2021, 7, 2, 0));
+            data_handler_1.default.getAverAndK(today).then(function (_a) {
+                var av = _a.av;
+                expect(av).toMatchSnapshot();
+                expect(av).toBe(400 / 3);
+                done();
+            });
         });
-    }); });
+        it('should return proper K', function (done) {
+            var today = new Date(Date.UTC(2021, 7, 2, 0));
+            var expectedAv = 400 / 3;
+            var digits = Math.floor(1 - Math.log10(expectedAv));
+            digits = Math.pow(10, digits);
+            var expectedK = Math.round(expectedAv * digits) / digits;
+            console.log(expectedK);
+            data_handler_1.default.getAverAndK(today).then(function (_a) {
+                var k = _a.k;
+                expect(k).toMatchSnapshot();
+                expect(k).toBe(expectedK);
+                done();
+            });
+        });
+    });
 });
