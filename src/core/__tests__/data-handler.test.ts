@@ -82,12 +82,16 @@ describe('DataHandler class', () => {
     expect(1).toBe(1);
   })
 
-  it('should getAverAndK with getAverAndK fucntion', async () => {
-    const today = new Date(Date.UTC(2021, 7, 2, 0));
-    console.log(today.toISOString().substr(0, 10));
-    console.log(today.getUTCHours().toString());
+  describe('getAverAndK function', () => {
+    it('should return proper av', (done) => {
+      //205 + 110 + 85 = 400 
+      const today = new Date(Date.UTC(2021, 7, 2, 0));
 
-    const result = await dataHandler.getAverAndK(today, 'alpha');
-    expect(result).toBe(Math.floor(400/3));
+      dataHandler.getAverAndK(today).then(({av}) => {
+        expect(av).toMatchSnapshot();
+        expect(av).toBe(400/3);
+        done();
+      });
+    })
   })
 })

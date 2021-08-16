@@ -373,13 +373,13 @@ class DataHandler {
     }
   }
 
-  public async getAverAndK(today: Date, market: string) {
+  public async getAverAndK(today: Date) {
     let givenDate = today;
     let sum = 0; 
 
     for(let i=0; i<3; i++){
       const getParams = {
-        TableName: market === 'ethereum' ? ETHTABLE_QUARTER : 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        TableName: process.env.MARKET === 'ethereum' ? ETHTABLE_QUARTER : 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
         Key: {
           date: { S: givenDate.toISOString().substr(0, 10)},
           hour: { S: givenDate.getUTCHours().toString()}
@@ -394,10 +394,12 @@ class DataHandler {
       givenDate = sub(givenDate, { hours: 4});
     }
 
-    const av = Math.floor(sum / 3);
+    const av = (sum / 3);
 
 
-    return av;
+    return {
+      av
+    };
   }
 }
 

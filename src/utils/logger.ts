@@ -35,5 +35,7 @@ const etherLogger = winston.createLogger({
   ]
 })
 
+const testLogger = winston.createLogger();
+
 export default winston;
-export {alphaLogger, etherLogger};
+export {alphaLogger, etherLogger, testLogger};
