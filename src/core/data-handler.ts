@@ -379,7 +379,7 @@ class DataHandler {
 
     for(let i=0; i<3; i++){
       const getParams = {
-        TableName: process.env.MARKET === 'ethereum' ? ETHTABLE_QUARTER : 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        TableName: process.env.MARKET === 'ethereum' ? ETHTABLE_QUARTER : process.env.MARKET === 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
         Key: {
           date: { S: givenDate.toISOString().substr(0, 10)},
           hour: { S: givenDate.getUTCHours().toString()}

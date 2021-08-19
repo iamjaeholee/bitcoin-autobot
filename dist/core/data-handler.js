@@ -638,7 +638,7 @@ var DataHandler = /** @class */ (function () {
                     case 1:
                         if (!(i < 3)) return [3 /*break*/, 4];
                         getParams = {
-                            TableName: process.env.MARKET === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
+                            TableName: process.env.MARKET === 'ethereum' ? config_1.ETHTABLE_QUARTER : process.env.MARKET === 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
                             Key: {
                                 date: { S: givenDate.toISOString().substr(0, 10) },
                                 hour: { S: givenDate.getUTCHours().toString() }

@@ -71,13 +71,13 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
             case 1:
                 _j.sent();
                 getParams = {
-                    TableName: market === "ethereum" ? config_1.ETHTABLE : "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    TableName: market === "ethereum" ? config_1.ETHTABLE : market === "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
                     Key: {
                         date: { S: date_fns_1.format(today, "yyyy-MM-dd") },
                     },
                 };
                 prevGetParams = {
-                    TableName: market === "ethereum" ? config_1.ETHTABLE : "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    TableName: market === "ethereum" ? config_1.ETHTABLE : market === "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
                     Key: {
                         date: { S: date_fns_1.format(date_fns_1.sub(today, { days: 1 }), "yyyy-MM-dd") },
                     },

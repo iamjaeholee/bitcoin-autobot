@@ -37,7 +37,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
   // 판단 플로우
   const getParams = {
     TableName:
-      market === "ethereum" ? ETHTABLE : "alpha" ? ALPHATABLE : ETHTABLE,
+      market === "ethereum" ? ETHTABLE : market === "alpha" ? ALPHATABLE : ETHTABLE,
     Key: {
       date: { S: format(today, "yyyy-MM-dd") },
     },
@@ -45,7 +45,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
 
   const prevGetParams = {
     TableName:
-      market === "ethereum" ? ETHTABLE : "alpha" ? ALPHATABLE : ETHTABLE,
+      market === "ethereum" ? ETHTABLE : market === "alpha" ? ALPHATABLE : ETHTABLE,
     Key: {
       date: { S: format(sub(today, { days: 1 }), "yyyy-MM-dd") },
     },

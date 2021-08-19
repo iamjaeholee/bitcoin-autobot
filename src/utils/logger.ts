@@ -44,7 +44,7 @@ const logger =
   process.env.NODE_ENV === "production"
     ? process.env.MARKET === "ethereum"
       ? etherLogger
-      : "alpha"
+      : process.env.MARKET === "alpha"
       ? alphaLogger
       : etherLogger
     : testLogger;
