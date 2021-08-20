@@ -341,7 +341,7 @@ class DataHandler {
     while (startDateInstance < endDateInstance) {
       // make config
       const startDaysCandleConfig =
-        getQuarterCandleConfig(startDateInstance).ethQuarterCandleConfig;
+        getQuarterCandleConfig(startDateInstance, market).ethQuarterCandleConfig;
 
       // fetch API
       const result = (await new Promise((resolve) =>
@@ -357,7 +357,7 @@ class DataHandler {
 
       // set params for putting DB
       const putParams = {
-        TableName: market === 'ethereum' ? ETHTABLE_QUARTER : 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        TableName: market === 'ethereum' ? ETHTABLE_QUARTER : market === 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
         Item: {
           date: { S: startDateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
