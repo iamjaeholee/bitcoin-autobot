@@ -376,10 +376,11 @@ class DataHandler {
   public async getAverAndK(today: Date) {
     let givenDate = today;
     let sum = 0; 
+    const market = process.env.MARKET as string;
 
     for(let i=0; i<3; i++){
       const getParams = {
-        TableName: process.env.MARKET === 'ethereum' ? ETHTABLE_QUARTER : process.env.MARKET === 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        TableName: market=== 'ethereum' ? ETHTABLE_QUARTER : market === 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
         Key: {
           date: { S: givenDate.toISOString().substr(0, 10)},
           hour: { S: givenDate.getUTCHours().toString()}

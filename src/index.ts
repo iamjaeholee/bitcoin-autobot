@@ -14,9 +14,9 @@ import {writeAverAndK} from './utils/log-writer';
 // TODO ScheduleJob to UTC time
 // UTC 9
 console.log("service has been started");
+const market = process.env.MARKET as string;
 
 schedule.scheduleJob("0 0 0 * * *", async () => {
-  const market = process.env.MARKET as string;
   const today = new Date(Date.now());
   const nextDay = add(today, { days: 1 });
 
@@ -123,7 +123,7 @@ schedule.scheduleJob("0 0 */4 * * *", async () => {
       date: nextDay.getUTCDate(),
       hour: nextDay.getUTCHours(),
     },
-    process.env.MARKET
+    market
   );
 
   const result = await dataHandler.getAverAndK(today);
