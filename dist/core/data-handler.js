@@ -134,7 +134,7 @@ var DataHandler = /** @class */ (function () {
                     case 2:
                         result = _a.sent();
                         params = {
-                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                            TableName: market === 'ethereum' ? config_1.ETHTABLE : market === 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Item: {
                                 date: { S: dateInstance.toISOString().substr(0, 10) },
                                 data: { S: JSON.stringify(result[0]) },
@@ -235,7 +235,7 @@ var DataHandler = /** @class */ (function () {
                                         result = (_d.sent());
                                         yesterDayInstance = new Date(date_fns_1.sub(startDateInstance, { days: 1 }));
                                         getParams = {
-                                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                                            TableName: market === 'ethereum' ? config_1.ETHTABLE : market === 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                                             Key: {
                                                 date: { S: yesterDayInstance.toISOString().substr(0, 10) },
                                             },
@@ -249,7 +249,7 @@ var DataHandler = /** @class */ (function () {
                                         // logging
                                         log_cloudwatch_1.logDayCandle(result[0], ems, market);
                                         putParams = {
-                                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                                            TableName: market === 'ethereum' ? config_1.ETHTABLE : market === 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                                             Item: {
                                                 date: { S: startDateInstance.toISOString().substr(0, 10) },
                                                 data: { S: JSON.stringify(result[0]) },
@@ -327,7 +327,7 @@ var DataHandler = /** @class */ (function () {
                     case 13:
                         result = _g.sent();
                         putParams = {
-                            TableName: market === 'ethreum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                            TableName: market === 'ethreum' ? config_1.ETHTABLE : market === 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Item: {
                                 date: { S: startDateInstance.toISOString().substr(0, 10) },
                                 data: { S: JSON.stringify(result[0]) },
@@ -362,7 +362,7 @@ var DataHandler = /** @class */ (function () {
                         if (!(i < 10)) return [3 /*break*/, 5];
                         startDateInstance = date_fns_1.sub(startDateInstance, { days: 1 });
                         getParams = {
-                            TableName: market === 'ethereum' ? config_1.ETHTABLE : 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                            TableName: market === 'ethereum' ? config_1.ETHTABLE : market === 'alpha' ? config_1.ALPHATABLE : config_1.ETHTABLE,
                             Key: {
                                 date: { S: startDateInstance.toISOString().substr(0, 10) },
                             },
@@ -578,7 +578,7 @@ var DataHandler = /** @class */ (function () {
                             return __generator(this, function (_b) {
                                 switch (_b.label) {
                                     case 0:
-                                        startDaysCandleConfig = utils_1.getQuarterCandleConfig(startDateInstance).ethQuarterCandleConfig;
+                                        startDaysCandleConfig = utils_1.getQuarterCandleConfig(startDateInstance, market).ethQuarterCandleConfig;
                                         return [4 /*yield*/, __await(new Promise(function (resolve) {
                                                 return setTimeout(function () { return __awaiter(_this, void 0, void 0, function () { var _a; return __generator(this, function (_b) {
                                                     switch (_b.label) {
@@ -594,7 +594,7 @@ var DataHandler = /** @class */ (function () {
                                         // logging
                                         log_cloudwatch_1.logQuarterCandle(result[0], market);
                                         putParams = {
-                                            TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
+                                            TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : market === 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
                                             Item: {
                                                 date: { S: startDateInstance.toISOString().substr(0, 10) },
                                                 data: { S: JSON.stringify(result[0]) },
@@ -627,18 +627,19 @@ var DataHandler = /** @class */ (function () {
     DataHandler.prototype.getAverAndK = function (today) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            var givenDate, sum, i, getParams, retrievedData, parsedData, diff, av, k;
+            var givenDate, sum, market, i, getParams, retrievedData, parsedData, diff, av, k;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         givenDate = today;
                         sum = 0;
+                        market = process.env.MARKET;
                         i = 0;
                         _c.label = 1;
                     case 1:
                         if (!(i < 3)) return [3 /*break*/, 4];
                         getParams = {
-                            TableName: process.env.MARKET === 'ethereum' ? config_1.ETHTABLE_QUARTER : process.env.MARKET === 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
+                            TableName: market === 'ethereum' ? config_1.ETHTABLE_QUARTER : market === 'alpha' ? config_1.ALPHATABLE_QUARTER : config_1.ETHTABLE_QUARTER,
                             Key: {
                                 date: { S: givenDate.toISOString().substr(0, 10) },
                                 hour: { S: givenDate.getUTCHours().toString() }

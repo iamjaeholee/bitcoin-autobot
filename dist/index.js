@@ -50,13 +50,13 @@ var log_writer_1 = require("./utils/log-writer");
 // TODO ScheduleJob to UTC time
 // UTC 9
 console.log("service has been started");
+var market = process.env.MARKET;
 node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var market, today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
+    var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
-                market = process.env.MARKET;
                 today = new Date(Date.now());
                 nextDay = date_fns_1.add(today, { days: 1 });
                 return [4 /*yield*/, data_handler_1.default.putDataWithEms({
@@ -150,7 +150,7 @@ node_schedule_1.default.scheduleJob("0 0 */4 * * *", function () { return __awai
                         month: nextDay.getUTCMonth(),
                         date: nextDay.getUTCDate(),
                         hour: nextDay.getUTCHours(),
-                    }, process.env.MARKET)];
+                    }, market)];
             case 1:
                 _a.sent();
                 return [4 /*yield*/, data_handler_1.default.getAverAndK(today)];

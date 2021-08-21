@@ -8,7 +8,7 @@ var getDayCandleConfig = function (toDate, market) {
         method: 'get',
         url: 'https://api.upbit.com/v1/candles/days',
         params: {
-            market: market === 'ethereum' ? config_1.ETHEREUM : 'alpha' ? config_1.ALPHA : config_1.ETHEREUM,
+            market: market === 'ethereum' ? config_1.ETHEREUM : market === 'alpha' ? config_1.ALPHA : config_1.ETHEREUM,
             count: 1,
             to: toDate
         }
@@ -22,7 +22,7 @@ var getQuarterCandleConfig = function (toDate, market) {
         method: 'get',
         url: 'https://api.upbit.com/v1/candles/minutes/240',
         params: {
-            market: market === 'ethereum' ? config_1.ETHEREUM : 'alpha' ? config_1.ALPHA : config_1.ETHEREUM,
+            market: market === 'ethereum' ? config_1.ETHEREUM : market === 'alpha' ? config_1.ALPHA : config_1.ETHEREUM,
             count: 1,
             to: toDate
         }

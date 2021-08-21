@@ -42,15 +42,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var data_handler_1 = __importDefault(require("../core/data-handler"));
 // put data
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var result;
+    var market, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: 2021, month: 7, date: 12 }, { year: 2021, month: 7, date: 13 }, 'ethereum')];
+            case 0:
+                market = process.env.MARKET;
+                return [4 /*yield*/, data_handler_1.default.putDataQuarterly({ year: 2021, month: 7, date: 20, hour: 16 }, { year: 2021, month: 7, date: 21, hour: 0 }, market)];
             case 1:
                 result = _a.sent();
-                // const result = await dataHandler.putTenData({year: 2020, month: 10, date:18}, 'alpha');
-                // const result = await dataHandler.putDataWithAverEms({year: 2020, month: 10, date:28}, 'alpha');
-                // const result = await dataHandler.putDataQuarterly({year: 2021, month: 6, date:23, hour: 12}, {year:2021, month:6, date:24, hour: 0}, 'alpha');
                 // const result = await dataHandler.putDataToExcel();
                 // const today = new Date(Date.UTC(2021, 5, 20));
                 // const nextDay = add(today, {days:1});
