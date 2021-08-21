@@ -61,7 +61,7 @@ class DataHandler {
 
       // set params for DB
       const params = {
-        TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
         Item: {
           date: { S: dateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
@@ -126,7 +126,7 @@ class DataHandler {
       // fetch yester days info from DB
       let yesterDayInstance = new Date(sub(startDateInstance, { days: 1 }));
       const getParams = {
-        TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
         Key: {
           date: { S: yesterDayInstance.toISOString().substr(0, 10)},
         },
@@ -144,7 +144,7 @@ class DataHandler {
 
       // set params for putting DB
       const putParams = {
-        TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
         Item: {
           date: { S: startDateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
@@ -187,7 +187,7 @@ class DataHandler {
     const result = await apiHandler.getInformation(startDaysCandleConfig);
 
     const putParams = {
-      TableName: market === 'ethreum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
+      TableName: market === 'ethreum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
       Item: {
         date: { S: startDateInstance.toISOString().substr(0, 10)},
         data: { S: JSON.stringify(result[0]) },
@@ -217,7 +217,7 @@ class DataHandler {
 
       // get item
       const getParams = {
-        TableName: market === 'ethereum' ? ETHTABLE : 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
         Key: {
           date: { S: startDateInstance.toISOString().substr(0, 10)},
         },
