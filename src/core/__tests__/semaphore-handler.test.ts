@@ -10,7 +10,7 @@ describe('semaphore handler', () => {
 
 	it('should set semaphore to DB', async () => {
 		const date = sub(new Date(Date.now()), {days: 1});
-		const result = await semaphoreHandler.setSemaphore(format(date, "yyyy-MM-dd"), 'alpha');
+		const result = await semaphoreHandler.setSemaphore(format(date, "yyyy-MM-dd"));
 
 		console.log(result);
 	})

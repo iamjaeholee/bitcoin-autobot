@@ -60,7 +60,7 @@ describe('semaphore handler', function () {
             switch (_a.label) {
                 case 0:
                     date = date_fns_1.sub(new Date(Date.now()), { days: 1 });
-                    return [4 /*yield*/, semaphore_handler_1.default.setSemaphore(date_fns_1.format(date, "yyyy-MM-dd"), 'alpha')];
+                    return [4 /*yield*/, semaphore_handler_1.default.setSemaphore(date_fns_1.format(date, "yyyy-MM-dd"))];
                 case 1:
                     result = _a.sent();
                     console.log(result);

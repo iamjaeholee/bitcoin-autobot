@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logQuarterCandle = exports.logDayCandle = void 0;
 var logger_1 = require("./logger");
-function logDayCandle(dayCandle, ema, market) {
-    if (market === void 0) { market = ''; }
+function logDayCandle(dayCandle, ema) {
     // start line
     logger_1.logger.info('********* Lets start the game Confess ! *************');
     logger_1.logger.info("====== trying to fetch dayCandle ======");
@@ -17,8 +16,7 @@ function logDayCandle(dayCandle, ema, market) {
     logger_1.logger.info("ema: " + ema);
 }
 exports.logDayCandle = logDayCandle;
-function logQuarterCandle(quarterCandle, market) {
-    if (market === void 0) { market = ''; }
+function logQuarterCandle(quarterCandle) {
     // start line
     logger_1.logger.info('********* Lets start the game Confess ! *************');
     logger_1.logger.info("====== trying to fetch quarterCandle ======");

@@ -35,74 +35,55 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var database_1 = __importDefault(require("../database"));
+exports.sendMessage = void 0;
+var api_handler_1 = __importDefault(require("./api-handler"));
+var key_1 = require("../config/key");
+var config_1 = require("../config");
 var mapper_1 = require("../utils/mapper");
-var SemaphoreHandler = /** @class */ (function () {
-    function SemaphoreHandler() {
-    }
-    ;
-    SemaphoreHandler.prototype.getSemaphore = function (market) {
-        var _a, _b;
-        if (market === void 0) { market = ''; }
-        return __awaiter(this, void 0, void 0, function () {
-            var params, result, _c, startDate;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
-                    case 0:
-                        params = {
-                            TableName: mapper_1.DYN_SEMA,
-                            Key: {
-                                name: { S: 'startDate' }
+function sendMessage(section) {
+    if (section === void 0) { section = [{}]; }
+    return __awaiter(this, void 0, void 0, function () {
+        var data, config;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    data = {
+                        channel: "C02BYCW9JRH",
+                        attachments: [
+                            {
+                                blocks: __spreadArray([
+                                    {
+                                        type: "header",
+                                        text: {
+                                            type: "plain_text",
+                                            text: "" + mapper_1.DYN_MARKET,
+                                        },
+                                    }
+                                ], section),
                             },
-                        };
-                        if (!params) return [3 /*break*/, 2];
-                        return [4 /*yield*/, database_1.default.getItem(params)];
-                    case 1:
-                        _c = _d.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        _c = undefined;
-                        _d.label = 3;
-                    case 3:
-                        result = _c;
-                        startDate = (_b = (_a = result === null || result === void 0 ? void 0 : result.Item) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.S;
-                        return [2 /*return*/, startDate];
-                }
-            });
+                        ],
+                    };
+                    config = {
+                        method: "post",
+                        url: config_1.SLACK_INCOMING_WEBHOOK,
+                        data: data,
+                        headers: {
+                            Authorization: "Bearer " + key_1.botToken,
+                        },
+                    };
+                    return [4 /*yield*/, api_handler_1.default.getInformation(config)];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
         });
-    };
-    SemaphoreHandler.prototype.setSemaphore = function (date) {
-        return __awaiter(this, void 0, void 0, function () {
-            var params, result, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        params = {
-                            TableName: mapper_1.DYN_SEMA,
-                            Item: {
-                                name: { S: 'startDate' },
-                                data: { S: date },
-                            },
-                        };
-                        if (!params) return [3 /*break*/, 2];
-                        return [4 /*yield*/, database_1.default.putItem(params)];
-                    case 1:
-                        _a = _b.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        _a = undefined;
-                        _b.label = 3;
-                    case 3:
-                        result = _a;
-                        return [2 /*return*/, result];
-                }
-            });
-        });
-    };
-    return SemaphoreHandler;
-}());
-exports.default = new SemaphoreHandler();
+    });
+}
+exports.sendMessage = sendMessage;

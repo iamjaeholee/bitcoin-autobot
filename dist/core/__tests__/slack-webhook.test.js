@@ -35,24 +35,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var data_handler_1 = __importDefault(require("../core/data-handler"));
-// put data
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var result;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, data_handler_1.default.putDataQuarterly({ year: 2021, month: 7, date: 20, hour: 16 }, { year: 2021, month: 7, date: 21, hour: 0 })];
-            case 1:
-                result = _a.sent();
-                // const result = await dataHandler.putDataToExcel();
-                // const today = new Date(Date.UTC(2021, 5, 20));
-                // const nextDay = add(today, {days:1});
-                result ? console.log('success') : console.log('fail');
-                return [2 /*return*/];
-        }
-    });
-}); })();
+var slack_webhook_1 = require("../slack-webhook");
+describe('slack webhook function', function () {
+    it('should send message', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var section, sectionTest, result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    section = {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: 'section test'
+                        },
+                        fields: [
+                            {
+                                type: 'mrkdwn',
+                                text: 'test'
+                            }
+                        ]
+                    };
+                    sectionTest = [section, section, section];
+                    return [4 /*yield*/, slack_webhook_1.sendMessage(sectionTest)];
+                case 1:
+                    result = _a.sent();
+                    expect(result).toEqual('ok');
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});

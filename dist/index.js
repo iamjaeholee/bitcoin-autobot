@@ -42,15 +42,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var node_schedule_1 = __importDefault(require("node-schedule"));
 var data_handler_1 = __importDefault(require("./core/data-handler"));
 var date_fns_1 = require("date-fns");
-var config_1 = require("./config");
 var database_1 = __importDefault(require("./database"));
 var semaphore_handler_1 = __importDefault(require("./core/semaphore-handler"));
 var logger_1 = require("./utils/logger");
 var log_writer_1 = require("./utils/log-writer");
+var mapper_1 = require("./utils/mapper");
 // TODO ScheduleJob to UTC time
 // UTC 9
 console.log("service has been started");
-var market = process.env.MARKET;
 node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
     var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
     var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -67,17 +66,17 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
                         year: nextDay.getUTCFullYear(),
                         month: nextDay.getUTCMonth(),
                         date: nextDay.getUTCDate(),
-                    }, market)];
+                    })];
             case 1:
                 _j.sent();
                 getParams = {
-                    TableName: market === "ethereum" ? config_1.ETHTABLE : market === "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    TableName: mapper_1.DYN_TABLE,
                     Key: {
                         date: { S: date_fns_1.format(today, "yyyy-MM-dd") },
                     },
                 };
                 prevGetParams = {
-                    TableName: market === "ethereum" ? config_1.ETHTABLE : market === "alpha" ? config_1.ALPHATABLE : config_1.ETHTABLE,
+                    TableName: mapper_1.DYN_TABLE,
                     Key: {
                         date: { S: date_fns_1.format(date_fns_1.sub(today, { days: 1 }), "yyyy-MM-dd") },
                     },
@@ -109,12 +108,13 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
                     if (diffRate <= -0.1) {
                         logger_1.logger.info("\uBCC0\uD654\uC728 <= -10%");
                         logger_1.logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uC0AC\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uB9E4\uC218\uD50C\uB85C\uC6B0 \uC9C4\uD589*");
+                        log_writer_1.buyAlertWriter();
                     }
                     else {
                         // waiting flow
                         logger_1.logger.info("\uBCC0\uD654\uC728 > -10%");
                         logger_1.logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uAE40\uB300\uAE30\uD558\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uAE40\uB300\uAE30*");
-                        semaphore_handler_1.default.setSemaphore(today.toISOString().substr(0, 10), market);
+                        semaphore_handler_1.default.setSemaphore(today.toISOString().substr(0, 10));
                     }
                 }
                 else {
@@ -150,7 +150,7 @@ node_schedule_1.default.scheduleJob("0 0 */4 * * *", function () { return __awai
                         month: nextDay.getUTCMonth(),
                         date: nextDay.getUTCDate(),
                         hour: nextDay.getUTCHours(),
-                    }, market)];
+                    })];
             case 1:
                 _a.sent();
                 return [4 /*yield*/, data_handler_1.default.getAverAndK(today)];

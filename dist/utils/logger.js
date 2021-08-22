@@ -10,39 +10,44 @@ var winston_1 = __importDefault(require("winston"));
 var winston_cloudwatch_1 = __importDefault(require("winston-cloudwatch"));
 aws_sdk_1.default.config.update({
     region: config_1.REGION,
-    credentials: new aws_sdk_1.default.SharedIniFileCredentials({ profile: 'leejaeho' })
+    credentials: new aws_sdk_1.default.SharedIniFileCredentials({ profile: "leejaeho" }),
 });
 winston_1.default.add(new winston_cloudwatch_1.default({
     cloudWatchLogs: new aws_sdk_1.default.CloudWatchLogs(),
-    logGroupName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'testing',
-    logStreamName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'first'
+    logGroupName: process.env.NODE_ENV === "production" ? "ethereum" : "testing",
+    logStreamName: process.env.NODE_ENV === "production" ? "ethereum" : "first",
 }));
-var alphaLogger = winston_1.default.createLogger({
+// const alphaLogger = winston.createLogger({
+//   transports:[
+//     new WinstonCloudWatch({
+//       cloudWatchLogs: new AWS.CloudWatchLogs(),
+//       logGroupName: process.env.NODE_ENV === 'production' ? 'alpha' : 'testing',
+//       logStreamName: process.env.NODE_ENV === 'production' ? 'alpha' : 'first'
+//     })
+//   ]
+// })
+// const etherLogger = winston.createLogger({
+//   transports:[
+//     new WinstonCloudWatch({
+//       cloudWatchLogs: new AWS.CloudWatchLogs(),
+//       logGroupName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'testing',
+//       logStreamName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'first'
+//     })
+//   ]
+// })
+var cloudLogger = winston_1.default.createLogger({
     transports: [
         new winston_cloudwatch_1.default({
             cloudWatchLogs: new aws_sdk_1.default.CloudWatchLogs(),
-            logGroupName: process.env.NODE_ENV === 'production' ? 'alpha' : 'testing',
-            logStreamName: process.env.NODE_ENV === 'production' ? 'alpha' : 'first'
-        })
-    ]
-});
-var etherLogger = winston_1.default.createLogger({
-    transports: [
-        new winston_cloudwatch_1.default({
-            cloudWatchLogs: new aws_sdk_1.default.CloudWatchLogs(),
-            logGroupName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'testing',
-            logStreamName: process.env.NODE_ENV === 'production' ? 'ethereum' : 'first'
-        })
-    ]
+            logGroupName: process.env.NODE_ENV === "production"
+                ? process.env.MARKET
+                : "testing",
+            logStreamName: process.env.NODE_ENV === "production" ? process.env.MARKET : "first",
+        }),
+    ],
 });
 var testLogger = winston_1.default.createLogger();
 exports.default = winston_1.default;
 // setup Logger
-var logger = process.env.NODE_ENV === "production"
-    ? process.env.MARKET === "ethereum"
-        ? etherLogger
-        : process.env.MARKET === "alpha"
-            ? alphaLogger
-            : etherLogger
-    : testLogger;
+var logger = process.env.NODE_ENV === "production" ? cloudLogger : testLogger;
 exports.logger = logger;
