@@ -1,4 +1,5 @@
 import {logger} from "./logger";
+import {sendMessage} from '../core/slack-webhook';
 
 interface writeAverAndKInput {
   av: number,
@@ -12,6 +13,19 @@ function writeAverAndK(input: writeAverAndKInput) {
   logger.info(`====== k is ====== ${k}`);
 }
 
+function buyAlertWriter() {
+  const section = {
+      type: 'section',
+      text: {
+          type: 'mrkdwn',
+          text: '*-10%이상, 매수하는 날임*'
+      },
+  }
+
+  const result = sendMessage([section]);
+}
+
 export {
-  writeAverAndK
+  writeAverAndK,
+  buyAlertWriter
 }

@@ -12,6 +12,7 @@ import { getDayCandleConfig, getQuarterCandleConfig } from "../utils";
 import { ETHTABLE, ETHTABLE_QUARTER, ALPHATABLE, ALPHATABLE_QUARTER } from "../config";
 import EmsComputer from "./ems-computer";
 import {logDayCandle, logQuarterCandle} from '../utils/log-cloudwatch';
+import { DYN_TABLE, DYN_TABLE_QUARTER } from "../utils/mapper";
 
 interface inputDate {
   year: number;
@@ -29,13 +30,13 @@ interface quarterInputDate {
 class DataHandler {
   constructor() {}
 
-  public async putTenData(startDate: inputDate, market: string) {
+  public async putTenData(startDate: inputDate) {
     let dateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date)
     );
 
     try {
-      for await (let result of this.putTenDataGenerator(dateInstance, market)) {
+      for await (let result of this.putTenDataGenerator(dateInstance)) {
       }
       return true;
     } catch (error) {
@@ -46,7 +47,6 @@ class DataHandler {
 
   private async *putTenDataGenerator(
     date: Date,
-    market: string
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let dateInstance = date;
 
@@ -54,14 +54,14 @@ class DataHandler {
     while (i < 10) {
       // make config
       const daysCandleConfig =
-        getDayCandleConfig(dateInstance, market).daysCandleConfig;
+        getDayCandleConfig(dateInstance).daysCandleConfig;
 
       // fetch API
       const result = await apiHandler.getInformation(daysCandleConfig);
 
       // set params for DB
       const params = {
-        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: DYN_TABLE,
         Item: {
           date: { S: dateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
@@ -77,7 +77,7 @@ class DataHandler {
     }
   }
 
-  public async putDataWithEms(startDate: inputDate, endDate: inputDate, market: string = '') {
+  public async putDataWithEms(startDate: inputDate, endDate: inputDate) {
     let startDateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date)
     );
@@ -89,7 +89,6 @@ class DataHandler {
       for await (let result of this.putDataWithEmsGenerator(
         startDateInstance,
         endDateInstance,
-        market
       )) {
       }
 
@@ -104,7 +103,6 @@ class DataHandler {
   private async *putDataWithEmsGenerator(
     startDate: Date,
     endDate: Date,
-    market: string
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let startDateInstance = startDate;
     let endDateInstance = endDate;
@@ -112,7 +110,7 @@ class DataHandler {
     while (startDateInstance < endDateInstance) {
       // make config
       const startDaysCandleConfig =
-        getDayCandleConfig(startDateInstance, market).daysCandleConfig;
+        getDayCandleConfig(startDateInstance).daysCandleConfig;
 
       // fetch API
       const result = (await new Promise((resolve) =>
@@ -126,7 +124,7 @@ class DataHandler {
       // fetch yester days info from DB
       let yesterDayInstance = new Date(sub(startDateInstance, { days: 1 }));
       const getParams = {
-        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: DYN_TABLE,
         Key: {
           date: { S: yesterDayInstance.toISOString().substr(0, 10)},
         },
@@ -140,11 +138,11 @@ class DataHandler {
       const ems = EmsComputer.computeEms(...params);
 
       // logging
-      logDayCandle(result[0], ems, market);
+      logDayCandle(result[0], ems);
 
       // set params for putting DB
       const putParams = {
-        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: DYN_TABLE,
         Item: {
           date: { S: startDateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
@@ -160,7 +158,7 @@ class DataHandler {
     }
   }
 
-  public async putDataWithAverEms(startDate: inputDate, market: string = '') {
+  public async putDataWithAverEms(startDate: inputDate) {
     let startDateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date)
     );
@@ -169,7 +167,6 @@ class DataHandler {
     let sum = 0;
     for await (let result of this.putDataWithAverEmsGenerator(
       startDateInstance,
-      market
     )) {
       const outputData = result?.Item?.data?.S as string;
 
@@ -181,13 +178,13 @@ class DataHandler {
     // set params for putting DB
     // make config
     const startDaysCandleConfig =
-      getDayCandleConfig(startDateInstance, market).daysCandleConfig;
+      getDayCandleConfig(startDateInstance).daysCandleConfig;
 
     // fetch API
     const result = await apiHandler.getInformation(startDaysCandleConfig);
 
     const putParams = {
-      TableName: market === 'ethreum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
+      TableName: DYN_TABLE,
       Item: {
         date: { S: startDateInstance.toISOString().substr(0, 10)},
         data: { S: JSON.stringify(result[0]) },
@@ -206,7 +203,6 @@ class DataHandler {
 
   private async *putDataWithAverEmsGenerator(
     date: Date,
-    market: string
   ): AsyncGenerator<GetItemCommandOutput | undefined> {
     let i = 0;
     let startDateInstance = date;
@@ -217,7 +213,7 @@ class DataHandler {
 
       // get item
       const getParams = {
-        TableName: market === 'ethereum' ? ETHTABLE : market === 'alpha' ? ALPHATABLE : ETHTABLE,
+        TableName: DYN_TABLE,
         Key: {
           date: { S: startDateInstance.toISOString().substr(0, 10)},
         },
@@ -305,7 +301,7 @@ class DataHandler {
    * @returns 
    */
 
-  public async putDataQuarterly(startDate: quarterInputDate, endDate: quarterInputDate, market:string = '') {
+  public async putDataQuarterly(startDate: quarterInputDate, endDate: quarterInputDate) {
     let startDateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date, startDate.hour)
     );
@@ -318,7 +314,6 @@ class DataHandler {
       for await (let result of this.putDataQuarterlyGenerator(
         startDateInstance,
         endDateInstance,
-        market
       )) {
       }
 
@@ -333,7 +328,6 @@ class DataHandler {
   private async *putDataQuarterlyGenerator(
     startDate: Date,
     endDate: Date,
-    market: string
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let startDateInstance = startDate;
     let endDateInstance = endDate;
@@ -341,7 +335,7 @@ class DataHandler {
     while (startDateInstance < endDateInstance) {
       // make config
       const startDaysCandleConfig =
-        getQuarterCandleConfig(startDateInstance, market).ethQuarterCandleConfig;
+        getQuarterCandleConfig(startDateInstance).ethQuarterCandleConfig;
 
       // fetch API
       const result = (await new Promise((resolve) =>
@@ -353,11 +347,11 @@ class DataHandler {
       )) as any[];
 
       // logging
-      logQuarterCandle(result[0], market);
+      logQuarterCandle(result[0]);
 
       // set params for putting DB
       const putParams = {
-        TableName: market === 'ethereum' ? ETHTABLE_QUARTER : market === 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        TableName: DYN_TABLE_QUARTER,
         Item: {
           date: { S: startDateInstance.toISOString().substr(0, 10)},
           data: { S: JSON.stringify(result[0]) },
@@ -376,11 +370,10 @@ class DataHandler {
   public async getAverAndK(today: Date) {
     let givenDate = today;
     let sum = 0; 
-    const market = process.env.MARKET as string;
 
     for(let i=0; i<3; i++){
       const getParams = {
-        TableName: market=== 'ethereum' ? ETHTABLE_QUARTER : market === 'alpha' ? ALPHATABLE_QUARTER : ETHTABLE_QUARTER,
+        TableName: DYN_TABLE_QUARTER,
         Key: {
           date: { S: givenDate.toISOString().substr(0, 10)},
           hour: { S: givenDate.getUTCHours().toString()}

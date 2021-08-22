@@ -1,18 +1,17 @@
 import dbManager from '../database';
-import {mapper} from '../utils/mapper';
+import {DYN_SEMA, mapper} from '../utils/mapper';
 
 class SemaphoreHandler {
 	constructor (){};
 
 	public async getSemaphore(market: string = ''){
-    const marketArgs = mapper.get(market);
 
-    const params = marketArgs ? {
-      TableName: marketArgs[3],
+    const params = {
+      TableName: DYN_SEMA,
       Key: {
         name: {S: 'startDate'}
       },
-    } : undefined
+    }
 
 		const result = params ? await dbManager.getItem(params) : undefined;
 		const startDate = (result?.Item?.data?.S as string);
@@ -20,15 +19,14 @@ class SemaphoreHandler {
 		return startDate;
 	}
 
-	public async setSemaphore(date: string, market:string = ''){
-    const marketArgs = mapper.get(market);
-    const params = marketArgs ? {
-      TableName: marketArgs[3],
+	public async setSemaphore(date: string){
+    const params = {
+      TableName: DYN_SEMA,
       Item: {
         name: {S: 'startDate'},
         data: {S: date},
       },
-    } : undefined
+    }
 
     const result = params ? await dbManager.putItem(params) : undefined;
 

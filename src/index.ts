@@ -4,17 +4,15 @@ import dataHandler from "./core/data-handler";
 import { format, add, sub } from "date-fns";
 import apiHandler from "./core/api-handler";
 import emsComputer from "./core/ems-computer";
-import { ETHTABLE, ETHEREUM, ALPHATABLE } from "./config";
 import DbManager from "./database";
-import { BADQUERY } from "dns";
 import semaphoreHandler from "./core/semaphore-handler";
-import {logger} from "./utils/logger";
-import {writeAverAndK} from './utils/log-writer';
+import { logger } from "./utils/logger";
+import { writeAverAndK, buyAlertWriter } from "./utils/log-writer";
+import {DYN_MARKET, DYN_TABLE, DYN_TABLE_QUARTER} from './utils/mapper';
 
 // TODO ScheduleJob to UTC time
 // UTC 9
 console.log("service has been started");
-const market = process.env.MARKET as string;
 
 schedule.scheduleJob("0 0 0 * * *", async () => {
   const today = new Date(Date.now());
@@ -31,21 +29,18 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
       month: nextDay.getUTCMonth(),
       date: nextDay.getUTCDate(),
     },
-    market
   );
 
   // 판단 플로우
   const getParams = {
-    TableName:
-      market === "ethereum" ? ETHTABLE : market === "alpha" ? ALPHATABLE : ETHTABLE,
+    TableName: DYN_TABLE,
     Key: {
       date: { S: format(today, "yyyy-MM-dd") },
     },
   };
 
   const prevGetParams = {
-    TableName:
-      market === "ethereum" ? ETHTABLE : market === "alpha" ? ALPHATABLE : ETHTABLE,
+    TableName: DYN_TABLE,
     Key: {
       date: { S: format(sub(today, { days: 1 }), "yyyy-MM-dd") },
     },
@@ -85,13 +80,14 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
         logger.info(
           `&&&&&&&&&&&&&&& 오늘은 사는 날인 갑다 ~! *매수플로우 진행*`
         );
+
+        buyAlertWriter();
       } else {
         // waiting flow
         logger.info(`변화율 > -10%`);
         logger.info(`&&&&&&&&&&&&&&& 오늘은 김대기하는 날인 갑다 ~! *김대기*`);
         semaphoreHandler.setSemaphore(
           today.toISOString().substr(0, 10),
-          market
         );
       }
     } else {
@@ -123,7 +119,6 @@ schedule.scheduleJob("0 0 */4 * * *", async () => {
       date: nextDay.getUTCDate(),
       hour: nextDay.getUTCHours(),
     },
-    market
   );
 
   const result = await dataHandler.getAverAndK(today);

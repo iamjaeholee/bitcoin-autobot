@@ -1,6 +1,6 @@
 import {logger} from './logger';
 
-function logDayCandle(dayCandle: any, ema: number, market:string = ''){
+function logDayCandle(dayCandle: any, ema: number){
 	// start line
 	logger.info('********* Lets start the game Confess ! *************');
 	logger.info(`====== trying to fetch dayCandle ======`);
@@ -14,7 +14,7 @@ function logDayCandle(dayCandle: any, ema: number, market:string = ''){
 
 }
 
-function logQuarterCandle(quarterCandle: any, market:string = ''){
+function logQuarterCandle(quarterCandle: any){
 	// start line
 	logger.info('********* Lets start the game Confess ! *************');
 	logger.info(`====== trying to fetch quarterCandle ======`);
