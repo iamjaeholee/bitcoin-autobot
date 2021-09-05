@@ -44,14 +44,14 @@ var data_handler_1 = __importDefault(require("./core/data-handler"));
 var date_fns_1 = require("date-fns");
 var database_1 = __importDefault(require("./database"));
 var semaphore_handler_1 = __importDefault(require("./core/semaphore-handler"));
-var logger_1 = require("./utils/logger");
 var log_writer_1 = require("./utils/log-writer");
 var mapper_1 = require("./utils/mapper");
+var slack_webhook_1 = require("./core/slack-webhook");
 // TODO ScheduleJob to UTC time
 // UTC 9
 console.log("service has been started");
 node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, diff, diffRate, e_1;
+    var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, section, diff, diffRate, e_1;
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -83,7 +83,7 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
                 };
                 _j.label = 2;
             case 2:
-                _j.trys.push([2, 5, , 6]);
+                _j.trys.push([2, 11, , 12]);
                 return [4 /*yield*/, database_1.default.getItem(getParams)];
             case 3:
                 yesterdayData = _j.sent();
@@ -94,41 +94,188 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
                 beforeYesterDayData = _j.sent();
                 beforeYesterDayParsedData = JSON.parse((_f = (_e = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _e === void 0 ? void 0 : _e.data) === null || _f === void 0 ? void 0 : _f.S);
                 beforeYesterDayEms = Number((_h = (_g = beforeYesterDayData === null || beforeYesterDayData === void 0 ? void 0 : beforeYesterDayData.Item) === null || _g === void 0 ? void 0 : _g.ems) === null || _h === void 0 ? void 0 : _h.N);
+                section = [];
                 // trade_price <= ems sell all ETH
-                logger_1.logger.info("====== \uD310\uB2E8 \uD50C\uB85C\uC6B0 ======");
-                if (parsedData.trade_price < yesterdayEms) {
-                    logger_1.logger.info("trade_price: " + parsedData.trade_price);
-                    logger_1.logger.info("ema: " + yesterdayEms);
-                    logger_1.logger.info("====== trade_price < ema ======");
-                    logger_1.logger.info("2\uC77C\uC804 trade_price: " + beforeYesterDayParsedData.trade_price);
-                    diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
-                    logger_1.logger.info("1\uC77C\uC804 trade_price - 2\uC77C\uC804 trade_price: " + diff);
-                    diffRate = diff / beforeYesterDayParsedData.trade_price;
-                    logger_1.logger.info("\uBCC0\uD654\uC728: " + diffRate);
-                    if (diffRate <= -0.1) {
-                        logger_1.logger.info("\uBCC0\uD654\uC728 <= -10%");
-                        logger_1.logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uC0AC\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uB9E4\uC218\uD50C\uB85C\uC6B0 \uC9C4\uD589*");
-                        log_writer_1.buyAlertWriter();
-                    }
-                    else {
-                        // waiting flow
-                        logger_1.logger.info("\uBCC0\uD654\uC728 > -10%");
-                        logger_1.logger.info("&&&&&&&&&&&&&&& \uC624\uB298\uC740 \uAE40\uB300\uAE30\uD558\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uAE40\uB300\uAE30*");
-                        semaphore_handler_1.default.setSemaphore(today.toISOString().substr(0, 10));
-                    }
-                }
-                else {
-                    logger_1.logger.info("trade_price: " + parsedData.trade_price);
-                    logger_1.logger.info("ema: " + yesterdayEms);
-                    logger_1.logger.info("====== trade_price >= ema ======");
-                    logger_1.logger.info("====== Min Max \uAD6C\uD604 \uC608\uC815");
-                }
-                return [3 /*break*/, 6];
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 판단 플로우가 시작했습니다.",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "오늘은 어떤날일까유 ?",
+                        },
+                    ],
+                });
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*trade_price*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "" + parsedData.trade_price,
+                        },
+                    ],
+                });
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*ema*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "" + yesterdayEms,
+                        },
+                    ],
+                });
+                if (!(parsedData.trade_price < yesterdayEms)) return [3 /*break*/, 8];
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 오늘은",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "trade_price < ema \uC774\uAC70\uC784",
+                        },
+                    ],
+                });
+                diff = parsedData.trade_price - beforeYesterDayParsedData.trade_price;
+                diffRate = diff / beforeYesterDayParsedData.trade_price;
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*그래서 2일전 트프랑 비교해보면*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "- 1\uC77C\uC804 trade_price - 2\uC77C\uC804 trade_price: " + diff,
+                        },
+                    ],
+                });
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*변화율*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "" + diff,
+                        },
+                    ],
+                });
+                if (!(diffRate <= -0.1)) return [3 /*break*/, 5];
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*변화율이*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "-10%\uBCF4\uB2E4 \uB0AE\uC74C",
+                        },
+                    ],
+                });
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 오늘의 추천",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "\uC624\uB298\uC740 \uC0AC\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! \uB9E4\uC218 \uD50C\uB85C\uC6B0 \uC9C4\uD589\uD558\uACA0\uC74C (\uAD6C\uD604 \uC608\uC815)",
+                        },
+                    ],
+                });
+                return [3 /*break*/, 7];
             case 5:
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*변화율이*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "-10%\uBCF4\uB2E4 \uB0AE\uC74C",
+                        },
+                    ],
+                });
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 오늘의 추천",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "\uC624\uB298\uC740 \uAE40\uB300\uAE30\uD558\uB294 \uB0A0\uC778 \uAC11\uB2E4 ~! *\uAE40\uB300\uAE30*",
+                        },
+                    ],
+                });
+                // 세마포어 셋업
+                return [4 /*yield*/, semaphore_handler_1.default.setSemaphore(today.toISOString().substr(0, 10))];
+            case 6:
+                // 세마포어 셋업
+                _j.sent();
+                _j.label = 7;
+            case 7: return [3 /*break*/, 9];
+            case 8:
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 오늘은",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "trade_price >= ema \uC774\uAC70\uC784",
+                        },
+                    ],
+                });
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "*다음플로우*",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "Min Max \uAD6C\uD604 \uC608\uC815\uC784",
+                        },
+                    ],
+                });
+                _j.label = 9;
+            case 9: return [4 /*yield*/, slack_webhook_1.sendMessage(section)];
+            case 10:
+                _j.sent();
+                return [3 /*break*/, 12];
+            case 11:
                 e_1 = _j.sent();
                 console.error(e_1);
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 12];
+            case 12: return [2 /*return*/];
         }
     });
 }); });
@@ -156,7 +303,9 @@ node_schedule_1.default.scheduleJob("0 0 */4 * * *", function () { return __awai
                 return [4 /*yield*/, data_handler_1.default.getAverAndK(today)];
             case 2:
                 result = _a.sent();
-                log_writer_1.writeAverAndK(result);
+                return [4 /*yield*/, log_writer_1.writeAverAndK(result)];
+            case 3:
+                _a.sent();
                 return [2 /*return*/];
         }
     });

@@ -9,9 +9,14 @@ import DbManager from "../database";
 import apiHandler from "./api-handler";
 import { format, add, sub } from "date-fns";
 import { getDayCandleConfig, getQuarterCandleConfig } from "../utils";
-import { ETHTABLE, ETHTABLE_QUARTER, ALPHATABLE, ALPHATABLE_QUARTER } from "../config";
+import {
+  ETHTABLE,
+  ETHTABLE_QUARTER,
+  ALPHATABLE,
+  ALPHATABLE_QUARTER,
+} from "../config";
 import EmsComputer from "./ems-computer";
-import {logDayCandle, logQuarterCandle} from '../utils/log-cloudwatch';
+import { logDayCandle, logQuarterCandle } from "../utils/log-cloudwatch";
 import { DYN_TABLE, DYN_TABLE_QUARTER } from "../utils/mapper";
 
 interface inputDate {
@@ -46,7 +51,7 @@ class DataHandler {
   }
 
   private async *putTenDataGenerator(
-    date: Date,
+    date: Date
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let dateInstance = date;
 
@@ -63,7 +68,7 @@ class DataHandler {
       const params = {
         TableName: DYN_TABLE,
         Item: {
-          date: { S: dateInstance.toISOString().substr(0, 10)},
+          date: { S: dateInstance.toISOString().substr(0, 10) },
           data: { S: JSON.stringify(result[0]) },
         },
       };
@@ -88,7 +93,7 @@ class DataHandler {
     try {
       for await (let result of this.putDataWithEmsGenerator(
         startDateInstance,
-        endDateInstance,
+        endDateInstance
       )) {
       }
 
@@ -102,7 +107,7 @@ class DataHandler {
 
   private async *putDataWithEmsGenerator(
     startDate: Date,
-    endDate: Date,
+    endDate: Date
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let startDateInstance = startDate;
     let endDateInstance = endDate;
@@ -126,7 +131,7 @@ class DataHandler {
       const getParams = {
         TableName: DYN_TABLE,
         Key: {
-          date: { S: yesterDayInstance.toISOString().substr(0, 10)},
+          date: { S: yesterDayInstance.toISOString().substr(0, 10) },
         },
       };
 
@@ -138,13 +143,13 @@ class DataHandler {
       const ems = EmsComputer.computeEms(...params);
 
       // logging
-      logDayCandle(result[0], ems);
+      await logDayCandle(result[0], ems);
 
       // set params for putting DB
       const putParams = {
         TableName: DYN_TABLE,
         Item: {
-          date: { S: startDateInstance.toISOString().substr(0, 10)},
+          date: { S: startDateInstance.toISOString().substr(0, 10) },
           data: { S: JSON.stringify(result[0]) },
           ems: { N: ems.toString() },
         },
@@ -166,7 +171,7 @@ class DataHandler {
     // summation
     let sum = 0;
     for await (let result of this.putDataWithAverEmsGenerator(
-      startDateInstance,
+      startDateInstance
     )) {
       const outputData = result?.Item?.data?.S as string;
 
@@ -186,7 +191,7 @@ class DataHandler {
     const putParams = {
       TableName: DYN_TABLE,
       Item: {
-        date: { S: startDateInstance.toISOString().substr(0, 10)},
+        date: { S: startDateInstance.toISOString().substr(0, 10) },
         data: { S: JSON.stringify(result[0]) },
         ems: { N: averEms.toString() },
       },
@@ -202,7 +207,7 @@ class DataHandler {
   }
 
   private async *putDataWithAverEmsGenerator(
-    date: Date,
+    date: Date
   ): AsyncGenerator<GetItemCommandOutput | undefined> {
     let i = 0;
     let startDateInstance = date;
@@ -215,7 +220,7 @@ class DataHandler {
       const getParams = {
         TableName: DYN_TABLE,
         Key: {
-          date: { S: startDateInstance.toISOString().substr(0, 10)},
+          date: { S: startDateInstance.toISOString().substr(0, 10) },
         },
       };
       const result = yield await DbManager.getItem(getParams);
@@ -238,15 +243,31 @@ class DataHandler {
     const worksheet = workbook.addWorksheet("test");
     worksheet.columns = [
       { header: "market", key: "market", width: 10 },
-      { header: "candle_date_time_utc", key: "candle_date_time_utc", width: 10 },
-      { header: "candle_date_time_kst", key: "candle_date_time_kst", width: 10 },
+      {
+        header: "candle_date_time_utc",
+        key: "candle_date_time_utc",
+        width: 10,
+      },
+      {
+        header: "candle_date_time_kst",
+        key: "candle_date_time_kst",
+        width: 10,
+      },
       { header: "opening_price", key: "opening_price", width: 10 },
       { header: "high_price", key: "high_price", width: 10 },
       { header: "low_price", key: "low_price", width: 10 },
       { header: "trade_price", key: "trade_price", width: 10 },
       { header: "timestamp", key: "timestamp", width: 10 },
-      { header: "candle_acc_trade_price", key: "candle_acc_trade_price", width: 10 },
-      { header: "candle_acc_trade_volume", key: "candle_acc_trade_volume", width: 10 },
+      {
+        header: "candle_acc_trade_price",
+        key: "candle_acc_trade_price",
+        width: 10,
+      },
+      {
+        header: "candle_acc_trade_volume",
+        key: "candle_acc_trade_volume",
+        width: 10,
+      },
       { header: "unit", key: "unit", width: 10 },
     ];
 
@@ -293,15 +314,17 @@ class DataHandler {
     }
   }
 
-
   /**
-   * 
+   *
    * @param startDate include
    * @param endDate exclude
-   * @returns 
+   * @returns
    */
 
-  public async putDataQuarterly(startDate: quarterInputDate, endDate: quarterInputDate) {
+  public async putDataQuarterly(
+    startDate: quarterInputDate,
+    endDate: quarterInputDate
+  ) {
     let startDateInstance = new Date(
       Date.UTC(startDate.year, startDate.month, startDate.date, startDate.hour)
     );
@@ -309,11 +332,10 @@ class DataHandler {
       Date.UTC(endDate.year, endDate.month, endDate.date, endDate.hour)
     );
 
-
     try {
       for await (let result of this.putDataQuarterlyGenerator(
         startDateInstance,
-        endDateInstance,
+        endDateInstance
       )) {
       }
 
@@ -327,7 +349,7 @@ class DataHandler {
 
   private async *putDataQuarterlyGenerator(
     startDate: Date,
-    endDate: Date,
+    endDate: Date
   ): AsyncGenerator<PutItemCommandOutput | undefined> {
     let startDateInstance = startDate;
     let endDateInstance = endDate;
@@ -347,15 +369,15 @@ class DataHandler {
       )) as any[];
 
       // logging
-      logQuarterCandle(result[0]);
+      await logQuarterCandle(result[0]);
 
       // set params for putting DB
       const putParams = {
         TableName: DYN_TABLE_QUARTER,
         Item: {
-          date: { S: startDateInstance.toISOString().substr(0, 10)},
+          date: { S: startDateInstance.toISOString().substr(0, 10) },
           data: { S: JSON.stringify(result[0]) },
-          hour: { S: startDateInstance.getUTCHours().toString()},
+          hour: { S: startDateInstance.getUTCHours().toString() },
         },
       };
 
@@ -369,39 +391,38 @@ class DataHandler {
 
   public async getAverAndK(today: Date) {
     let givenDate = today;
-    let sum = 0; 
+    let sum = 0;
 
-    for(let i=0; i<3; i++){
+    for (let i = 0; i < 3; i++) {
       const getParams = {
         TableName: DYN_TABLE_QUARTER,
         Key: {
-          date: { S: givenDate.toISOString().substr(0, 10)},
-          hour: { S: givenDate.getUTCHours().toString()}
+          date: { S: givenDate.toISOString().substr(0, 10) },
+          hour: { S: givenDate.getUTCHours().toString() },
         },
       };
 
       const retrievedData = await DbManager.getItem(getParams);
-      const parsedData = JSON.parse(retrievedData?.Item?.data?.S as string)
+      const parsedData = JSON.parse(retrievedData?.Item?.data?.S as string);
       const diff = parsedData.high_price - parsedData.low_price;
       sum += diff;
 
-      givenDate = sub(givenDate, { hours: 4});
+      givenDate = sub(givenDate, { hours: 4 });
     }
 
-    const av = (sum / 3);
+    const av = sum / 3;
 
-
-    const k = this.calcRoundXL(av,(Math.floor(1-Math.log10(av))));
+    const k = this.calcRoundXL(av, Math.floor(1 - Math.log10(av)));
 
     return {
       av,
-      k
+      k,
     };
   }
 
-  private calcRoundXL(num: number, digits: number){
-      digits = Math.pow(10, digits);
-      return Math.round(num * digits) / digits;
+  private calcRoundXL(num: number, digits: number) {
+    digits = Math.pow(10, digits);
+    return Math.round(num * digits) / digits;
   }
 }
 

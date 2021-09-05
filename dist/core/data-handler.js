@@ -246,7 +246,10 @@ var DataHandler = /** @class */ (function () {
                                         params = [result[0].trade_price, yesterdayEms];
                                         ems = ems_computer_1.default.computeEms.apply(ems_computer_1.default, params);
                                         // logging
-                                        log_cloudwatch_1.logDayCandle(result[0], ems);
+                                        return [4 /*yield*/, __await(log_cloudwatch_1.logDayCandle(result[0], ems))];
+                                    case 3:
+                                        // logging
+                                        _d.sent();
                                         putParams = {
                                             TableName: mapper_1.DYN_TABLE,
                                             Item: {
@@ -256,9 +259,9 @@ var DataHandler = /** @class */ (function () {
                                             },
                                         };
                                         return [4 /*yield*/, __await(database_1.default.putItem(putParams))];
-                                    case 3: return [4 /*yield*/, __await.apply(void 0, [_d.sent()])];
-                                    case 4: return [4 /*yield*/, _d.sent()];
-                                    case 5:
+                                    case 4: return [4 /*yield*/, __await.apply(void 0, [_d.sent()])];
+                                    case 5: return [4 /*yield*/, _d.sent()];
+                                    case 6:
                                         output = _d.sent();
                                         // add day
                                         startDateInstance = date_fns_1.add(startDateInstance, { days: 1 });
@@ -389,15 +392,31 @@ var DataHandler = /** @class */ (function () {
                         worksheet = workbook.addWorksheet("test");
                         worksheet.columns = [
                             { header: "market", key: "market", width: 10 },
-                            { header: "candle_date_time_utc", key: "candle_date_time_utc", width: 10 },
-                            { header: "candle_date_time_kst", key: "candle_date_time_kst", width: 10 },
+                            {
+                                header: "candle_date_time_utc",
+                                key: "candle_date_time_utc",
+                                width: 10,
+                            },
+                            {
+                                header: "candle_date_time_kst",
+                                key: "candle_date_time_kst",
+                                width: 10,
+                            },
                             { header: "opening_price", key: "opening_price", width: 10 },
                             { header: "high_price", key: "high_price", width: 10 },
                             { header: "low_price", key: "low_price", width: 10 },
                             { header: "trade_price", key: "trade_price", width: 10 },
                             { header: "timestamp", key: "timestamp", width: 10 },
-                            { header: "candle_acc_trade_price", key: "candle_acc_trade_price", width: 10 },
-                            { header: "candle_acc_trade_volume", key: "candle_acc_trade_volume", width: 10 },
+                            {
+                                header: "candle_acc_trade_price",
+                                key: "candle_acc_trade_price",
+                                width: 10,
+                            },
+                            {
+                                header: "candle_acc_trade_volume",
+                                key: "candle_acc_trade_volume",
+                                width: 10,
+                            },
                             { header: "unit", key: "unit", width: 10 },
                         ];
                         _d.label = 1;
@@ -589,7 +608,10 @@ var DataHandler = /** @class */ (function () {
                                     case 1:
                                         result = (_b.sent());
                                         // logging
-                                        log_cloudwatch_1.logQuarterCandle(result[0]);
+                                        return [4 /*yield*/, __await(log_cloudwatch_1.logQuarterCandle(result[0]))];
+                                    case 2:
+                                        // logging
+                                        _b.sent();
                                         putParams = {
                                             TableName: mapper_1.DYN_TABLE_QUARTER,
                                             Item: {
@@ -599,9 +621,9 @@ var DataHandler = /** @class */ (function () {
                                             },
                                         };
                                         return [4 /*yield*/, __await(database_1.default.putItem(putParams))];
-                                    case 2: return [4 /*yield*/, __await.apply(void 0, [_b.sent()])];
-                                    case 3: return [4 /*yield*/, _b.sent()];
-                                    case 4:
+                                    case 3: return [4 /*yield*/, __await.apply(void 0, [_b.sent()])];
+                                    case 4: return [4 /*yield*/, _b.sent()];
+                                    case 5:
                                         output = _b.sent();
                                         // add quarter
                                         startDateInstance = date_fns_1.add(startDateInstance, { hours: 4 });
@@ -638,7 +660,7 @@ var DataHandler = /** @class */ (function () {
                             TableName: mapper_1.DYN_TABLE_QUARTER,
                             Key: {
                                 date: { S: givenDate.toISOString().substr(0, 10) },
-                                hour: { S: givenDate.getUTCHours().toString() }
+                                hour: { S: givenDate.getUTCHours().toString() },
                             },
                         };
                         return [4 /*yield*/, database_1.default.getItem(getParams)];
@@ -653,11 +675,11 @@ var DataHandler = /** @class */ (function () {
                         i++;
                         return [3 /*break*/, 1];
                     case 4:
-                        av = (sum / 3);
-                        k = this.calcRoundXL(av, (Math.floor(1 - Math.log10(av))));
+                        av = sum / 3;
+                        k = this.calcRoundXL(av, Math.floor(1 - Math.log10(av)));
                         return [2 /*return*/, {
                                 av: av,
-                                k: k
+                                k: k,
                             }];
                 }
             });

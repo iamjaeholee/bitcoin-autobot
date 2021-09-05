@@ -1,31 +1,54 @@
-import {logger} from "./logger";
-import {sendMessage} from '../core/slack-webhook';
+import { sendMessage } from "../core/slack-webhook";
 
 interface writeAverAndKInput {
-  av: number,
-  k: number
+  av: number;
+  k: number;
 }
 
-function writeAverAndK(input: writeAverAndKInput) {
-  const {av, k} = input;
+async function writeAverAndK(input: writeAverAndKInput) {
+  const { av, k } = input;
 
-  logger.info(`====== Av is ====== ${av}`);
-  logger.info(`====== k is ====== ${k}`);
+  const section = [];
+  section.push({
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: "> 오늘의 Av와 k는 ?",
+    },
+    fields: [
+      {
+        type: "mrkdwn",
+        text: `*Av: ${av} && k: ${k}* `,
+      },
+    ],
+  });
+
+  await sendMessage(section);
 }
 
 function buyAlertWriter() {
   const section = {
-      type: 'section',
-      text: {
-          type: 'mrkdwn',
-          text: '*-10%이상, 매수하는 날임*'
-      },
-  }
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: "*-10%이상, 매수하는 날임*",
+    },
+  };
 
   const result = sendMessage([section]);
 }
 
-export {
-  writeAverAndK,
-  buyAlertWriter
+// write judge to slack
+interface judgeWrigerInput {
+  parsedData: {
+    trade_price: number;
+  };
+
+  beforeYesterDayParsedData: {
+    trade_price: number;
+  };
+
+  yesterdayEms: number;
 }
+
+export { writeAverAndK, buyAlertWriter };

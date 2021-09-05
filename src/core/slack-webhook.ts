@@ -39,6 +39,7 @@ async function sendMessage(section: Section[] = [{}]) {
       Authorization: `Bearer ${botToken}`,
     },
   };
+
   return await apiHandler.getInformation(config);
 }
 

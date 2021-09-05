@@ -1,28 +1,83 @@
-import {logger} from './logger';
+import { sendMessage } from "../core/slack-webhook";
 
-function logDayCandle(dayCandle: any, ema: number){
-	// start line
-	logger.info('********* Lets start the game Confess ! *************');
-	logger.info(`====== trying to fetch dayCandle ======`);
-	logger.info(`time: ${new Date(Date.now()).toISOString()} `);
-	logger.info(`====== fetched data ======`);
-	for(const [key, value] of Object.entries(dayCandle)){
-		logger.info(`${key} : ${value}`);
-	}
-	logger.info(`====== calculated ema ======`);
-	logger.info(`ema: ${ema}`);
-
+async function logDayCandle(dayCandle: any, ema: number) {
+  const section = [];
+  section.push({
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: "> 따끈 따끈한 일일봉이 도착했슴둥",
+    },
+    fields: [
+      {
+        type: "mrkdwn",
+        text: `- time: ${new Date(Date.now()).toISOString()} `,
+      },
+    ],
+  });
+  for (const [key, value] of Object.entries(dayCandle)) {
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*${key}*`,
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `${value}`,
+        },
+      ],
+    });
+  }
+  section.push({
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: `> ema`,
+    },
+    fields: [
+      {
+        type: "mrkdwn",
+        text: `${ema}`,
+      },
+    ],
+  });
+  await sendMessage(section);
 }
 
-function logQuarterCandle(quarterCandle: any){
-	// start line
-	logger.info('********* Lets start the game Confess ! *************');
-	logger.info(`====== trying to fetch quarterCandle ======`);
-	logger.info(`time: ${new Date(Date.now()).toISOString()} `);
-	logger.info(`====== fetched data ======`);
-	for(const [key, value] of Object.entries(quarterCandle)){
-		logger.info(`${key} : ${value}`);
-	}
+async function logQuarterCandle(quarterCandle: any) {
+  const section = [];
+  section.push({
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: "> 따끈 따끈한 쿼터캔들이 도착했슴둥",
+    },
+    fields: [
+      {
+        type: "mrkdwn",
+        text: `- time: ${new Date(Date.now()).toISOString()} `,
+      },
+    ],
+  });
+  // start line
+  for (const [key, value] of Object.entries(quarterCandle)) {
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*${key}*`,
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `${value}`,
+        },
+      ],
+    });
+  }
+  console.error(await sendMessage(section));
 }
 
-export {logDayCandle, logQuarterCandle};
+export { logDayCandle, logQuarterCandle };

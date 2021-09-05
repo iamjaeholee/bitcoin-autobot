@@ -45,13 +45,21 @@ var data_handler_1 = __importDefault(require("../core/data-handler"));
     var result;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, data_handler_1.default.putDataQuarterly({ year: 2021, month: 7, date: 20, hour: 16 }, { year: 2021, month: 7, date: 21, hour: 0 })];
+            case 0: return [4 /*yield*/, data_handler_1.default.putDataWithEms({ year: 2021, month: 7, date: 25 }, { year: 2021, month: 8, date: 6 })];
             case 1:
                 result = _a.sent();
+                // const result = await dataHandler.putDataWithEms({year: 2017, month: 9, date:6}, {year:2017, month:9, date:10});
+                // const result = await dataHandler.putTenData({year: 2017, month: 8, date:26});
+                // const result = await dataHandler.putDataWithAverEms({year: 2017, month: 9, date:6});
+                // const result = await dataHandler.putDataWi020, month: 10, date:28}, 'alpha');
+                // const result = await dataHandler.putDataQuarterly(
+                //   { year: 2021, month: 8, date: 1, hour: 0 },
+                //   { year: 2021, month: 8, date: 5, hour: 8 }
+                // );
                 // const result = await dataHandler.putDataToExcel();
                 // const today = new Date(Date.UTC(2021, 5, 20));
                 // const nextDay = add(today, {days:1});
-                result ? console.log('success') : console.log('fail');
+                result ? console.log("success") : console.log("fail");
                 return [2 /*return*/];
         }
     });

@@ -1,14 +1,12 @@
 import schedule from "node-schedule";
-import { Method } from "axios";
 import dataHandler from "./core/data-handler";
 import { format, add, sub } from "date-fns";
-import apiHandler from "./core/api-handler";
-import emsComputer from "./core/ems-computer";
 import DbManager from "./database";
 import semaphoreHandler from "./core/semaphore-handler";
-import { logger } from "./utils/logger";
-import { writeAverAndK, buyAlertWriter } from "./utils/log-writer";
-import {DYN_MARKET, DYN_TABLE, DYN_TABLE_QUARTER} from './utils/mapper';
+import { writeAverAndK } from "./utils/log-writer";
+import { DYN_MARKET, DYN_TABLE, DYN_TABLE_QUARTER } from "./utils/mapper";
+import { stringify } from "querystring";
+import { sendMessage } from "./core/slack-webhook";
 
 // TODO ScheduleJob to UTC time
 // UTC 9
@@ -28,7 +26,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
       year: nextDay.getUTCFullYear(),
       month: nextDay.getUTCMonth(),
       date: nextDay.getUTCDate(),
-    },
+    }
   );
 
   // 판단 플로우
@@ -60,42 +58,181 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
     );
     const beforeYesterDayEms = Number(beforeYesterDayData?.Item?.ems?.N);
 
+    const section = [];
     // trade_price <= ems sell all ETH
-    logger.info(`====== 판단 플로우 ======`);
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "> 판단 플로우가 시작했습니다.",
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: "오늘은 어떤날일까유 ?",
+        },
+      ],
+    });
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "*trade_price*",
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `${parsedData.trade_price}`,
+        },
+      ],
+    });
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "*ema*",
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `${yesterdayEms}`,
+        },
+      ],
+    });
+
+    // trade price가 ems보다 작은 경우
     if (parsedData.trade_price < yesterdayEms) {
-      logger.info(`trade_price: ${parsedData.trade_price}`);
-      logger.info(`ema: ${yesterdayEms}`);
-      logger.info(`====== trade_price < ema ======`);
-      logger.info(
-        `2일전 trade_price: ${beforeYesterDayParsedData.trade_price}`
-      );
+      section.push({
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "> 오늘은",
+        },
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `trade_price < ema 이거임`,
+          },
+        ],
+      });
       const diff =
         parsedData.trade_price - beforeYesterDayParsedData.trade_price;
-      logger.info(`1일전 trade_price - 2일전 trade_price: ${diff}`);
       const diffRate = diff / beforeYesterDayParsedData.trade_price;
-      logger.info(`변화율: ${diffRate}`);
+      section.push({
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*그래서 2일전 트프랑 비교해보면*",
+        },
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `- 1일전 trade_price - 2일전 trade_price: ${diff}`,
+          },
+        ],
+      });
+      section.push({
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*변화율*",
+        },
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `${diff}`,
+          },
+        ],
+      });
 
       if (diffRate <= -0.1) {
-        logger.info(`변화율 <= -10%`);
-        logger.info(
-          `&&&&&&&&&&&&&&& 오늘은 사는 날인 갑다 ~! *매수플로우 진행*`
-        );
-
-        buyAlertWriter();
+        section.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "*변화율이*",
+          },
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `-10%보다 낮음`,
+            },
+          ],
+        });
+        section.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "> 오늘의 추천",
+          },
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `오늘은 사는 날인 갑다 ~! 매수 플로우 진행하겠음 (구현 예정)`,
+            },
+          ],
+        });
       } else {
-        // waiting flow
-        logger.info(`변화율 > -10%`);
-        logger.info(`&&&&&&&&&&&&&&& 오늘은 김대기하는 날인 갑다 ~! *김대기*`);
-        semaphoreHandler.setSemaphore(
-          today.toISOString().substr(0, 10),
-        );
+        section.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "*변화율이*",
+          },
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `-10%보다 낮음`,
+            },
+          ],
+        });
+        section.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "> 오늘의 추천",
+          },
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `오늘은 김대기하는 날인 갑다 ~! *김대기*`,
+            },
+          ],
+        });
+
+        // 세마포어 셋업
+        await semaphoreHandler.setSemaphore(today.toISOString().substr(0, 10));
       }
     } else {
-      logger.info(`trade_price: ${parsedData.trade_price}`);
-      logger.info(`ema: ${yesterdayEms}`);
-      logger.info(`====== trade_price >= ema ======`);
-      logger.info(`====== Min Max 구현 예정`);
+      section.push({
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "> 오늘은",
+        },
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `trade_price >= ema 이거임`,
+          },
+        ],
+      });
+      section.push({
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*다음플로우*",
+        },
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `Min Max 구현 예정임`,
+          },
+        ],
+      });
     }
+
+    await sendMessage(section);
   } catch (e) {
     console.error(e);
   }
@@ -118,9 +255,9 @@ schedule.scheduleJob("0 0 */4 * * *", async () => {
       month: nextDay.getUTCMonth(),
       date: nextDay.getUTCDate(),
       hour: nextDay.getUTCHours(),
-    },
+    }
   );
 
   const result = await dataHandler.getAverAndK(today);
-  writeAverAndK(result);
+  await writeAverAndK(result);
 });
