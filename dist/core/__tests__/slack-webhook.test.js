@@ -37,30 +37,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var slack_webhook_1 = require("../slack-webhook");
-describe('slack webhook function', function () {
-    it('should send message', function () { return __awaiter(void 0, void 0, void 0, function () {
+describe("slack webhook function", function () {
+    it("should send message", function () { return __awaiter(void 0, void 0, void 0, function () {
         var section, sectionTest, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     section = {
-                        type: 'section',
+                        type: "section",
                         text: {
-                            type: 'mrkdwn',
-                            text: 'section test'
+                            type: "mrkdwn",
+                            text: "section test",
                         },
                         fields: [
                             {
-                                type: 'mrkdwn',
-                                text: 'test'
-                            }
-                        ]
+                                type: "mrkdwn",
+                                text: "test",
+                            },
+                        ],
                     };
                     sectionTest = [section, section, section];
                     return [4 /*yield*/, slack_webhook_1.sendMessage(sectionTest)];
                 case 1:
                     result = _a.sent();
-                    expect(result).toEqual('ok');
+                    expect(result).toEqual("ok");
                     return [2 /*return*/];
             }
         });

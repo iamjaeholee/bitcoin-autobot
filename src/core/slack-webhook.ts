@@ -1,8 +1,7 @@
 import { Method, AxiosRequestConfig } from "axios";
 import apiHandler from "./api-handler";
 import { botToken } from "../config/key";
-import { SLACK_INCOMING_WEBHOOK } from "../config";
-import { DYN_MARKET } from "../utils/mapper";
+import { DYN_MARKET, DYN_CHANNEL, DYN_SLACK_URL } from "../utils/mapper";
 
 interface Section {
   type?: string;
@@ -13,7 +12,7 @@ interface Section {
 async function sendMessage(section: Section[] = [{}]) {
   // data
   const data = {
-    channel: "C02BYCW9JRH",
+    channel: DYN_CHANNEL,
     attachments: [
       {
         blocks: [
@@ -33,7 +32,7 @@ async function sendMessage(section: Section[] = [{}]) {
   // config for api call
   const config: AxiosRequestConfig = {
     method: "post" as Method,
-    url: SLACK_INCOMING_WEBHOOK,
+    url: DYN_SLACK_URL,
     data,
     headers: {
       Authorization: `Bearer ${botToken}`,

@@ -47,7 +47,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMessage = void 0;
 var api_handler_1 = __importDefault(require("./api-handler"));
 var key_1 = require("../config/key");
-var config_1 = require("../config");
 var mapper_1 = require("../utils/mapper");
 function sendMessage(section) {
     if (section === void 0) { section = [{}]; }
@@ -57,7 +56,7 @@ function sendMessage(section) {
             switch (_a.label) {
                 case 0:
                     data = {
-                        channel: "C02BYCW9JRH",
+                        channel: mapper_1.DYN_CHANNEL,
                         attachments: [
                             {
                                 blocks: __spreadArray([
@@ -74,7 +73,7 @@ function sendMessage(section) {
                     };
                     config = {
                         method: "post",
-                        url: config_1.SLACK_INCOMING_WEBHOOK,
+                        url: mapper_1.DYN_SLACK_URL,
                         data: data,
                         headers: {
                             Authorization: "Bearer " + key_1.botToken,
