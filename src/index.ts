@@ -4,9 +4,9 @@ import { format, add, sub } from "date-fns";
 import DbManager from "./database";
 import semaphoreHandler from "./core/semaphore-handler";
 import { writeAverAndK } from "./utils/log-writer";
-import { DYN_MARKET, DYN_TABLE, DYN_TABLE_QUARTER } from "./utils/mapper";
-import { stringify } from "querystring";
+import { DYN_TABLE } from "./utils/mapper";
 import { sendMessage } from "./core/slack-webhook";
+import Error from "express";
 
 // TODO ScheduleJob to UTC time
 // UTC 9
@@ -140,7 +140,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
         fields: [
           {
             type: "mrkdwn",
-            text: `${diff}`,
+            text: `${diffRate}`,
           },
         ],
       });
@@ -233,8 +233,24 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
     }
 
     await sendMessage(section);
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    const section = [];
+    // trade_price <= ems sell all ETH
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "> 이거슨 에러다.",
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `${e?.message}`,
+        },
+      ],
+    });
+
+    await sendMessage(section);
   }
 });
 
@@ -243,21 +259,41 @@ schedule.scheduleJob("0 0 */4 * * *", async () => {
   const today = new Date(Date.now());
   const nextDay = add(today, { hours: 4 });
 
-  await dataHandler.putDataQuarterly(
-    {
-      year: today.getUTCFullYear(),
-      month: today.getUTCMonth(),
-      date: today.getUTCDate(),
-      hour: today.getUTCHours(),
-    },
-    {
-      year: nextDay.getUTCFullYear(),
-      month: nextDay.getUTCMonth(),
-      date: nextDay.getUTCDate(),
-      hour: nextDay.getUTCHours(),
-    }
-  );
+  try {
+    await dataHandler.putDataQuarterly(
+      {
+        year: today.getUTCFullYear(),
+        month: today.getUTCMonth(),
+        date: today.getUTCDate(),
+        hour: today.getUTCHours(),
+      },
+      {
+        year: nextDay.getUTCFullYear(),
+        month: nextDay.getUTCMonth(),
+        date: nextDay.getUTCDate(),
+        hour: nextDay.getUTCHours(),
+      }
+    );
 
-  const result = await dataHandler.getAverAndK(today);
-  await writeAverAndK(result);
+    const result = await dataHandler.getAverAndK(today);
+    await writeAverAndK(result);
+  } catch (e: any) {
+    const section = [];
+    // trade_price <= ems sell all ETH
+    section.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "> 이거슨 에러다.",
+      },
+      fields: [
+        {
+          type: "mrkdwn",
+          text: `${e?.message}`,
+        },
+      ],
+    });
+
+    await sendMessage(section);
+  }
 });
