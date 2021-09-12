@@ -51,7 +51,7 @@ var slack_webhook_1 = require("./core/slack-webhook");
 // UTC 9
 console.log("service has been started");
 node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, section, diff, diffRate, e_1;
+    var today, nextDay, getParams, prevGetParams, yesterdayData, parsedData, yesterdayEms, beforeYesterDayData, beforeYesterDayParsedData, beforeYesterDayEms, section, diff, diffRate, e_1, section;
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -83,7 +83,7 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
                 };
                 _j.label = 2;
             case 2:
-                _j.trys.push([2, 11, , 12]);
+                _j.trys.push([2, 11, , 13]);
                 return [4 /*yield*/, database_1.default.getItem(getParams)];
             case 3:
                 yesterdayData = _j.sent();
@@ -173,7 +173,7 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
                     fields: [
                         {
                             type: "mrkdwn",
-                            text: "" + diff,
+                            text: "" + diffRate,
                         },
                     ],
                 });
@@ -270,23 +270,43 @@ node_schedule_1.default.scheduleJob("0 0 0 * * *", function () { return __awaite
             case 9: return [4 /*yield*/, slack_webhook_1.sendMessage(section)];
             case 10:
                 _j.sent();
-                return [3 /*break*/, 12];
+                return [3 /*break*/, 13];
             case 11:
                 e_1 = _j.sent();
-                console.error(e_1);
-                return [3 /*break*/, 12];
-            case 12: return [2 /*return*/];
+                section = [];
+                // trade_price <= ems sell all ETH
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 이거슨 에러다.",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "" + (e_1 === null || e_1 === void 0 ? void 0 : e_1.message),
+                        },
+                    ],
+                });
+                return [4 /*yield*/, slack_webhook_1.sendMessage(section)];
+            case 12:
+                _j.sent();
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); });
 // every 4 hours schedule
 node_schedule_1.default.scheduleJob("0 0 */4 * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var today, nextDay, result;
+    var today, nextDay, result, e_2, section;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 today = new Date(Date.now());
                 nextDay = date_fns_1.add(today, { hours: 4 });
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 5, , 7]);
                 return [4 /*yield*/, data_handler_1.default.putDataQuarterly({
                         year: today.getUTCFullYear(),
                         month: today.getUTCMonth(),
@@ -298,15 +318,37 @@ node_schedule_1.default.scheduleJob("0 0 */4 * * *", function () { return __awai
                         date: nextDay.getUTCDate(),
                         hour: nextDay.getUTCHours(),
                     })];
-            case 1:
+            case 2:
                 _a.sent();
                 return [4 /*yield*/, data_handler_1.default.getAverAndK(today)];
-            case 2:
+            case 3:
                 result = _a.sent();
                 return [4 /*yield*/, log_writer_1.writeAverAndK(result)];
-            case 3:
+            case 4:
                 _a.sent();
-                return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 5:
+                e_2 = _a.sent();
+                section = [];
+                // trade_price <= ems sell all ETH
+                section.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "> 이거슨 에러다.",
+                    },
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: "" + (e_2 === null || e_2 === void 0 ? void 0 : e_2.message),
+                        },
+                    ],
+                });
+                return [4 /*yield*/, slack_webhook_1.sendMessage(section)];
+            case 6:
+                _a.sent();
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });

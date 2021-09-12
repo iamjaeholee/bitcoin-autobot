@@ -21,7 +21,6 @@ var axios_1 = __importDefault(require("axios"));
 var ApiHandler = /** @class */ (function () {
     function ApiHandler() {
     }
-    ;
     /**
      *
      * @param {!AxiosRequestConfig} config  axios config
@@ -29,10 +28,12 @@ var ApiHandler = /** @class */ (function () {
      */
     ApiHandler.prototype.getInformation = function (config) {
         if (config === void 0) { config = undefined; }
-        return axios_1.default(__assign({}, config)).then(function (res) {
+        return axios_1.default(__assign({}, config))
+            .then(function (res) {
             return res.data;
-        }).catch(function (err) {
-            return err.response.data;
+        })
+            .catch(function (err) {
+            return err;
         });
     };
     return ApiHandler;
