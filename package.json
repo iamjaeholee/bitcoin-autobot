@@ -57,7 +57,7 @@
     "ts-jest": "^27.0.1"
   },
   "jest": {
-    "verbose":true,
+    "verbose": true,
     "moduleFileExtensions": [
       "ts",
       "tsx",

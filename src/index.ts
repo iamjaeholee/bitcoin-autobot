@@ -16,6 +16,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
   const today = new Date(Date.now());
   const nextDay = add(today, { days: 1 });
 
+  // 매 9시마다 00시 데이터를 테이블에 EMA와 함께 저장
   await dataHandler.putDataWithEms(
     {
       year: today.getUTCFullYear(),
@@ -29,7 +30,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
     }
   );
 
-  // 판단 플로우
+  // 파라미터
   const getParams = {
     TableName: DYN_TABLE,
     Key: {
@@ -56,10 +57,12 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
     const beforeYesterDayParsedData = JSON.parse(
       beforeYesterDayData?.Item?.data?.S as string
     );
+
     const beforeYesterDayEms = Number(beforeYesterDayData?.Item?.ems?.N);
 
     const section = [];
     // trade_price <= ems sell all ETH
+    // 판단 플로우 로깅
     section.push({
       type: "section",
       text: {
@@ -145,6 +148,7 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
         ],
       });
 
+      // 상태가 매수로 바뀌는 부분
       if (diffRate <= -0.1) {
         section.push({
           type: "section",
@@ -172,6 +176,9 @@ schedule.scheduleJob("0 0 0 * * *", async () => {
             },
           ],
         });
+
+        // 세마포어 상태 매수로 셋팅
+        await semaphoreHandler.setState("state", "buy");
       } else {
         section.push({
           type: "section",

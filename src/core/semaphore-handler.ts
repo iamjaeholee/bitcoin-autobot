@@ -1,37 +1,50 @@
-import dbManager from '../database';
-import {DYN_SEMA, mapper} from '../utils/mapper';
+import dbManager from "../database";
+import { DYN_SEMA, mapper } from "../utils/mapper";
 
 class SemaphoreHandler {
-	constructor (){};
+  constructor() {}
 
-	public async getSemaphore(market: string = ''){
-
+  public async getSemaphore(market: string = "") {
     const params = {
       TableName: DYN_SEMA,
       Key: {
-        name: {S: 'startDate'}
+        name: { S: "startDate" },
       },
-    }
+    };
 
-		const result = params ? await dbManager.getItem(params) : undefined;
-		const startDate = (result?.Item?.data?.S as string);
+    const result = params ? await dbManager.getItem(params) : undefined;
+    const startDate = result?.Item?.data?.S as string;
 
-		return startDate;
-	}
+    return startDate;
+  }
 
-	public async setSemaphore(date: string){
+  public async setSemaphore(date: string) {
     const params = {
       TableName: DYN_SEMA,
       Item: {
-        name: {S: 'startDate'},
-        data: {S: date},
+        name: { S: "startDate" },
+        data: { S: date },
       },
-    }
+    };
 
     const result = params ? await dbManager.putItem(params) : undefined;
 
-		return result;
-	}
+    return result;
+  }
+
+  public async setState(key: string = "state", value: string = "judge") {
+    const params = {
+      TableName: DYN_SEMA,
+      Item: {
+        name: { S: key },
+        data: { S: value },
+      },
+    };
+
+    const result = params ? await dbManager.putItem(params) : undefined;
+
+    return result;
+  }
 }
 
 export default new SemaphoreHandler();
