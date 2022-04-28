@@ -8,3 +8,5 @@ node_modules
 
 *.cer
 *.snap
+
+*src/config/key.ts
